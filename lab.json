@@ -1,0 +1,466 @@
+{
+    "aggregation_layer": {
+        "tof_4_1": {
+            "interfaces": {},
+            "name": "tof_4_1",
+            "neighbours": [
+                [
+                    "spine_1_3_1",
+                    "AABU"
+                ],
+                [
+                    "spine_1_3_2",
+                    "AABV"
+                ],
+                [
+                    "spine_2_3_1",
+                    "AABW"
+                ],
+                [
+                    "spine_2_3_2",
+                    "AABX"
+                ],
+                [
+                    "tof_5_1",
+                    "AABY"
+                ],
+                [
+                    "tof_5_2",
+                    "AABZ"
+                ]
+            ],
+            "role": "tof"
+        },
+        "tof_4_2": {
+            "interfaces": {},
+            "name": "tof_4_2",
+            "neighbours": [
+                [
+                    "spine_1_3_1",
+                    "AACA"
+                ],
+                [
+                    "spine_1_3_2",
+                    "AACB"
+                ],
+                [
+                    "spine_2_3_1",
+                    "AACC"
+                ],
+                [
+                    "spine_2_3_2",
+                    "AACD"
+                ],
+                [
+                    "tof_5_1",
+                    "AACE"
+                ],
+                [
+                    "tof_5_2",
+                    "AACF"
+                ]
+            ],
+            "role": "tof"
+        },
+        "tof_5_1": {
+            "interfaces": {},
+            "name": "tof_5_1",
+            "neighbours": [
+                [
+                    "tof_4_1",
+                    "AABY"
+                ],
+                [
+                    "tof_4_2",
+                    "AACE"
+                ]
+            ],
+            "role": "tof"
+        },
+        "tof_5_2": {
+            "interfaces": {},
+            "name": "tof_5_2",
+            "neighbours": [
+                [
+                    "tof_4_1",
+                    "AABZ"
+                ],
+                [
+                    "tof_4_2",
+                    "AACF"
+                ]
+            ],
+            "role": "tof"
+        }
+    },
+    "pods": {
+        "pod1": {
+            "leaf_1_0_1": {
+                "interfaces": {},
+                "name": "leaf_1_0_1",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAA"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAB"
+                    ],
+                    [
+                        "server_1_1_1",
+                        "AAAC"
+                    ]
+                ],
+                "role": "leaf"
+            },
+            "leaf_1_0_2": {
+                "interfaces": {},
+                "name": "leaf_1_0_2",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAD"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAE"
+                    ],
+                    [
+                        "server_1_2_1",
+                        "AAAF"
+                    ]
+                ],
+                "role": "leaf"
+            },
+            "server_1_1_1": {
+                "interfaces": {},
+                "name": "server_1_1_1",
+                "neighbours": [
+                    [
+                        "leaf_1_0_1",
+                        "AAAC"
+                    ]
+                ],
+                "role": "server"
+            },
+            "server_1_2_1": {
+                "interfaces": {},
+                "name": "server_1_2_1",
+                "neighbours": [
+                    [
+                        "leaf_1_0_2",
+                        "AAAF"
+                    ]
+                ],
+                "role": "server"
+            },
+            "spine_1_1_1": {
+                "interfaces": {},
+                "name": "spine_1_1_1",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAG"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAH"
+                    ],
+                    [
+                        "spine_1_3_1",
+                        "AAAI"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_1_1_2": {
+                "interfaces": {},
+                "name": "spine_1_1_2",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAH"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAJ"
+                    ],
+                    [
+                        "spine_1_3_1",
+                        "AAAK"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_1_2_1": {
+                "interfaces": {},
+                "name": "spine_1_2_1",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAL"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAM"
+                    ],
+                    [
+                        "tof_3_1",
+                        "AAAN"
+                    ],
+                    [
+                        "tof_3_2",
+                        "AAAO"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_1_2_2": {
+                "interfaces": {},
+                "name": "spine_1_2_2",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAP"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAQ"
+                    ],
+                    [
+                        "tof_3_1",
+                        "AAAR"
+                    ],
+                    [
+                        "tof_3_2",
+                        "AAAS"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_1_3_1": {
+                "interfaces": {},
+                "name": "spine_1_3_1",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAI"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAK"
+                    ],
+                    [
+                        "spine_1_3_1",
+                        "AAAT"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_1_3_2": {
+                "interfaces": {},
+                "name": "spine_1_3_2",
+                "neighbours": [
+                    [
+                        "spine_1_1_1",
+                        "AAAU"
+                    ],
+                    [
+                        "spine_1_1_2",
+                        "AAAV"
+                    ],
+                    [
+                        "spine_1_3_1",
+                        "AAAW"
+                    ]
+                ],
+                "role": "spine"
+            }
+        },
+        "pod2": {
+            "leaf_2_0_1": {
+                "interfaces": {},
+                "name": "leaf_2_0_1",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AAAX"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AAAY"
+                    ],
+                    [
+                        "server_2_1_1",
+                        "AAAZ"
+                    ]
+                ],
+                "role": "leaf"
+            },
+            "leaf_2_0_2": {
+                "interfaces": {},
+                "name": "leaf_2_0_2",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABA"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABB"
+                    ],
+                    [
+                        "server_2_2_1",
+                        "AABC"
+                    ]
+                ],
+                "role": "leaf"
+            },
+            "server_2_1_1": {
+                "interfaces": {},
+                "name": "server_2_1_1",
+                "neighbours": [
+                    [
+                        "leaf_2_0_1",
+                        "AAAZ"
+                    ]
+                ],
+                "role": "server"
+            },
+            "server_2_2_1": {
+                "interfaces": {},
+                "name": "server_2_2_1",
+                "neighbours": [
+                    [
+                        "leaf_2_0_2",
+                        "AABC"
+                    ]
+                ],
+                "role": "server"
+            },
+            "spine_2_1_1": {
+                "interfaces": {},
+                "name": "spine_2_1_1",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABD"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABE"
+                    ],
+                    [
+                        "spine_2_3_1",
+                        "AABF"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_2_1_2": {
+                "interfaces": {},
+                "name": "spine_2_1_2",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABE"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABG"
+                    ],
+                    [
+                        "spine_2_3_1",
+                        "AABH"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_2_2_1": {
+                "interfaces": {},
+                "name": "spine_2_2_1",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABI"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABJ"
+                    ],
+                    [
+                        "tof_3_1",
+                        "AABK"
+                    ],
+                    [
+                        "tof_3_2",
+                        "AABL"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_2_2_2": {
+                "interfaces": {},
+                "name": "spine_2_2_2",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABM"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABN"
+                    ],
+                    [
+                        "tof_3_1",
+                        "AABO"
+                    ],
+                    [
+                        "tof_3_2",
+                        "AABP"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_2_3_1": {
+                "interfaces": {},
+                "name": "spine_2_3_1",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABF"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABH"
+                    ],
+                    [
+                        "spine_2_3_1",
+                        "AABQ"
+                    ]
+                ],
+                "role": "spine"
+            },
+            "spine_2_3_2": {
+                "interfaces": {},
+                "name": "spine_2_3_2",
+                "neighbours": [
+                    [
+                        "spine_2_1_1",
+                        "AABR"
+                    ],
+                    [
+                        "spine_2_1_2",
+                        "AABS"
+                    ],
+                    [
+                        "spine_2_3_1",
+                        "AABT"
+                    ]
+                ],
+                "role": "spine"
+            }
+        }
+    }
+}
