@@ -1,7 +1,8 @@
 import netutils
+from models import node
 
 
-class Leaf:
+class Leaf(node.Node):
     def __init__(self, name, pod_number, leaf_number, connected_spine, connected_server):
         """
         Initialize the leaf object assigning name and populating self.neighbours
@@ -11,11 +12,11 @@ class Leaf:
         :param connected_spine: (int) the number spines connected northbound to this leaf
         :param connected_server: (int) the number of servers connected southbound to this leaf
         """
+        super().__init__()
         self.role = 'leaf'
         self.name = name
-        self.interfaces = {}
-        self.neighbours = []
         self.add_neighbours(pod_number, leaf_number, connected_spine, connected_server)
+        self.assign_ipv4_address_to_interfaces()
 
     def add_neighbours(self, pod_number, leaf_number, connected_spine, connected_server):
         """
@@ -37,3 +38,5 @@ class Leaf:
             server_name = "server_" + str(pod_number) + "_" + str(leaf_number) + "_" + str(i)
             collision_domain = netutils.get_collision_domain(self.name, server_name)
             self.neighbours.append((server_name, collision_domain))
+
+

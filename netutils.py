@@ -1,3 +1,6 @@
+import ipaddress
+
+
 current_id1 = "A"
 current_id2 = "A"
 current_id3 = "A"
@@ -55,4 +58,38 @@ def get_new_collision_domain():
     current_id4 = chr(ascii_int4)
 
     return current_id1 + current_id2 + current_id3 + current_id4
+
+
+base_net_ipv4 = ipaddress.ip_network("10.0.0.0/16")
+subnets_ipv4 = list(base_net_ipv4.subnets(new_prefix=30))
+
+ipv4_assignments = {}
+
+
+def get_node_info_from_ipv4_assignment(assignment, node_name):
+    for item in assignment[2:]:
+        if node_name in item:
+            return assignment[0], assignment[1], item
+
+
+def get_new_ipv4_address_pair(collision_domain, node_name1, node_name2):
+    global base_net_ipv4, ipv4_assignments
+
+    if (node_name1, node_name2) in ipv4_assignments.keys():
+        return get_node_info_from_ipv4_assignment(ipv4_assignments.get((node_name1, node_name2)), node_name1)
+    elif (node_name2, node_name1) in ipv4_assignments.keys():
+        return get_node_info_from_ipv4_assignment(ipv4_assignments.get((node_name2, node_name1)), node_name1)
+    else:
+        net = subnets_ipv4.pop()
+        ip1 = net[1]
+        ip2 = net[2]
+        new_assignment = (collision_domain, net, (node_name1, ip1), (node_name2, ip2))
+        ipv4_assignments[(node_name1, node_name2)] = new_assignment
+        result = get_node_info_from_ipv4_assignment(new_assignment, node_name1)
+        return result
+
+
+
+
+
 

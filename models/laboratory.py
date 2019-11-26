@@ -13,7 +13,7 @@ def obj_to_dict(obj):
 class Lab:
     def __init__(self, conf):
         """
-        initialize the object and creates the laboratory corresponding to conf
+        Initialize the object and creates the laboratory corresponding to conf
         :param conf: configuration read from "config.json"
         """
         self.pods = {}
@@ -56,8 +56,9 @@ class Lab:
         for level in range(1, pod_info['spine_levels'] + 1):
             for spine_num in range(1, pod_info['spine_num'][level - 1] + 1):
                 spine_name = 'spine_' + str(pod_number) + '_' + str(level) + '_' + str(spine_num)
-                spine = spine_model.Spine(spine_name, pod_number, spine_num, pod_info['leaf_num'], level,
+                spine = spine_model.Spine(spine_name, pod_number, level,
                                           pod_info['spine_levels'],
+                                          connected_leafs = pod_info['leaf_num'],
                                           connected_tofs=lab_info['aggregation_layer']['tof_num'],
                                           connected_spines=pod_info['spine_num'])
                 self.pods[pod_name][spine_name] = spine

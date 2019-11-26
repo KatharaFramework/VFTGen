@@ -1,9 +1,10 @@
 import netutils
+from models import node
 
 
-class Spine:
-    def __init__(self, name, pod_number, spine_number, level, pod_total_levels,
-                 connected_leafs=0, connected_tofs=0, connected_spines=[]):
+class Spine(node.Node):
+    def __init__(self, name, pod_number, level, pod_total_levels, connected_leafs=0, connected_tofs=0,
+                 connected_spines=[]):
         """
         Initialize the spine object assigning name and populating its neighbours
         :param name: (string) the name of the spine node
@@ -16,12 +17,12 @@ class Spine:
         :param connected_spines: (int list, default=[]) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
         """
+        super().__init__()
         self.role = 'spine'
         self.name = name
-        self.interfaces = {}
-        self.neighbours = []
         self.add_neighbours(pod_number, level, pod_total_levels,
                             connected_leafs, connected_tofs, connected_spines)
+        self.assign_ipv4_address_to_interfaces()
 
     def add_neighbour(self, node_name):
         """
@@ -48,6 +49,7 @@ class Spine:
         """
         # if it is the first level of spine then connect this spine to all southbound leafs in this pod
         if level == 1:
+
             # connects this spine to any leaf at level 0 in this pod
             for leaf_num in range(1, connected_leafs + 1):
                 leaf_name = 'leaf_' + str(pod_number) + '_0_' + str(leaf_num)
@@ -61,6 +63,7 @@ class Spine:
             # if it is not the last level of the pod then connects
             # this spine to northbound spines of level above of this pod
             else:
+
                 for spine_num in range(1, connected_spines[1] + 1):
                     spine_name = 'spine_' + str(pod_number) + '_' + str(level + 1) + '_' + str(spine_num)
                     self.add_neighbour(spine_name)

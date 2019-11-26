@@ -1,9 +1,10 @@
 import netutils
+from models import node
 
 
-class Tof:
-    def __init__(self, name, tof_number, level, aggregation_layer_levels, tofs_per_level, pod_levels,
-                 number_of_pods=0, southbound_spines_connected_per_pod=0):
+class Tof(node.Node):
+    def __init__(self, name, tof_number, level, aggregation_layer_levels, tofs_per_level, pod_levels, number_of_pods=0,
+                 southbound_spines_connected_per_pod=0):
         """
         Initialize the tof object assigning name and populating its neighbours
         :param name: (string) the name of the tof
@@ -15,12 +16,12 @@ class Tof:
         :param number_of_pods: (int, default=0) total number of pods
         :param southbound_spines_connected_per_pod: (int, deafult=0) number of spines at the last level of each pod
         """
+        super().__init__()
         self.role = 'tof'
         self.name = name
-        self.interfaces = {}
-        self.neighbours = []
         self.add_neighbours(level, aggregation_layer_levels, tofs_per_level, pod_levels, number_of_pods,
                             southbound_spines_connected_per_pod)
+        self.assign_ipv4_address_to_interfaces()
 
     def add_neighbour(self, node_name):
         """
