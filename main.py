@@ -1,10 +1,11 @@
 import utils
-from models import laboratory
+from model.FatTree import FatTree
 
 
-config = utils.read_config('config.json')
-lab = laboratory.Lab(config)
+if __name__ == '__main__':
+    config = utils.read_config('config.json')
 
-json_file = open('lab.json', 'w')
-json_file.write(lab.to_json())
-json_file.close()
+    fat_tree = FatTree()
+    fat_tree.create(config)
+
+    utils.write_json_file("lab_new.json", fat_tree.to_dict())

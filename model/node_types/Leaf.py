@@ -1,8 +1,8 @@
-import netutils
-from models import node
+from model.node.Node import Node
+from networking.CollisionDomain import CollisionDomain
 
 
-class Leaf(node.Node):
+class Leaf(Node):
     def __init__(self, name, pod_number, leaf_number, connected_spine, connected_server):
         """
         Initialize the leaf object assigning name and populating self.neighbours
@@ -15,10 +15,11 @@ class Leaf(node.Node):
         super().__init__()
         self.role = 'leaf'
         self.name = name
-        self.add_neighbours(pod_number, leaf_number, connected_spine, connected_server)
-        self.assign_ipv4_address_to_interfaces()
 
-    def add_neighbours(self, pod_number, leaf_number, connected_spine, connected_server):
+        self._add_neighbours(pod_number, leaf_number, connected_spine, connected_server)
+        self._assign_ipv4_address_to_interfaces()
+
+    def _add_neighbours(self, pod_number, leaf_number, connected_spine, connected_server):
         """
         Add neighbours to self.neighbours
         :param pod_number: (int) the number of the pod
@@ -27,16 +28,16 @@ class Leaf(node.Node):
         :param connected_server: (int) the number of servers connected southbound to this leaf
         :return:
         """
-        # adding spines
+        # Adding spines
         for i in range(1, connected_spine + 1):
-            spine_name = "spine_" + str(pod_number) + "_1_" + str(i)
-            collision_domain = netutils.get_collision_domain(self.name, spine_name)
+            spine_name = "spine_%d_1_%d" % (pod_number, i)
+            collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, spine_name)
+
             self.neighbours.append((spine_name, collision_domain))
 
-        # adding servers
+        # Adding servers
         for i in range(1, connected_server + 1):
-            server_name = "server_" + str(pod_number) + "_" + str(leaf_number) + "_" + str(i)
-            collision_domain = netutils.get_collision_domain(self.name, server_name)
+            server_name = "server_%d_%d_%d" % (pod_number, leaf_number, i)
+            collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, server_name)
+
             self.neighbours.append((server_name, collision_domain))
-
-

@@ -1,16 +1,11 @@
 {
   "pod_num": 2,
-  "pod":
-  {
-    "spine_num": [2,2,2],
-    "spine_levels": 3,
+  "pod": {
+    "spine_num": [2, 2, 2],
     "leaf_num" : 2,
     "servers_for_rack": 1
   },
-  "aggregation_layer":
-  {
-    "levels" : 2,
-    "tof_num": [2,2]
+  "aggregation_layer": {
+    "tof_num": [2, 2]
   }
-
 }

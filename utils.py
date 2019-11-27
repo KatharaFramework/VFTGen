@@ -13,3 +13,6 @@ def read_config(config):
     return conf
 
 
+def write_json_file(file, content):
+    with open(file, 'w') as json_file:
+        json_file.write(json.dumps(content, indent=4, sort_keys=True))
