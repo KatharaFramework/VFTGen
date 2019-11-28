@@ -1,10 +1,22 @@
 import utils
-from models import laboratory
+import os
+import shutil
+from model.FatTree import FatTree
+from model.Laboratory import Laboratory
 
 
-config = utils.read_config('config.json')
-lab = laboratory.Lab(config)
+if __name__ == '__main__':
+    if os.path.isdir('lab'):
+        shutil.rmtree('lab')
+    os.mkdir('lab')
 
-json_file = open('lab.json', 'w')
-json_file.write(lab.to_json())
-json_file.close()
+    config = utils.read_config('config.json')
+
+    fat_tree = FatTree()
+    fat_tree.create(config)
+
+    lab = Laboratory()
+    lab.write_kathara_configurations(fat_tree)
+    lab.write_kathara_bgp_configuration(fat_tree)
+
+    utils.write_json_file("lab_new.json", fat_tree.to_dict())
