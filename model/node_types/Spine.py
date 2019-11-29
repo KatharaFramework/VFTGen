@@ -46,6 +46,7 @@ class Spine(Node):
 
             if pod_total_levels == 1:
                 # If it is the last level of spines then connect this spine to northbound tofs in the aggregation layer
+
                 for tof_num in range(1, connected_tofs + 1):
                     tof_name = 'tof_%d_%d' % (real_level + 1, tof_num)
 
@@ -68,7 +69,7 @@ class Spine(Node):
             if real_level == pod_total_levels:
                 # If it is the last level of the pod then connects northbound all the tof in the first level of the
                 # aggregation layer
-                for tof_num in range(1, connected_tofs[0] + 1):
+                for tof_num in range(1, connected_tofs + 1):
                     tof_name = 'tof_%d_%d' % (real_level + 1, tof_num)
 
                     self._add_neighbour(tof_name)
