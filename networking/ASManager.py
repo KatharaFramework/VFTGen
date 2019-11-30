@@ -32,7 +32,7 @@ class ASManager(object):
         as_number = 0
         if node.role == 'leaf':
             as_number = self.get_new_as_number()
-            self.as_number_assignments[(node.pod_number, node.level)] = as_number
+
         elif node.role == 'spine':
 
             if (node.pod_number, node.level) in self.as_number_assignments:
