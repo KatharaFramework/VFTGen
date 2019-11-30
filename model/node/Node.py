@@ -11,7 +11,7 @@ class Node(object):
 
     def _assign_ipv4_address_to_interfaces(self):
         for neighbour_name, collision_domain in self.neighbours:
-            assignment = IPAM.get_instance().get_new_ipv4_address_pair(collision_domain, self.name, neighbour_name)
+            assignment = IPAM.get_instance().get_ipv4_address_pair(collision_domain, self.name, neighbour_name)
 
             network = assignment["subnet"]
             ipv4_address = assignment[self.name]

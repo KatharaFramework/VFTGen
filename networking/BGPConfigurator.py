@@ -24,7 +24,7 @@ class BGPConfigurator(object):
         bgp_conf.write(
             "\n\n" +
             "ip prefix-list DC_LOCAL_SUBNET 5 permit 10.0.0.0/8 le 26\n"
-            + "ip prefix-list DC_LOCAL_SUBNET 10 permit 200.0.0.0/16 le 32\n"
+            + "ip prefix-list DC_LOCAL_SUBNET 10 permit 200.0.0.0/8 le 32\n"
             + "route-map ACCEPT_DC_LOCAL permit 10\n"
             + " match ip-address DC_LOCAL_SUBNET\n\n\n"
         )
