@@ -19,4 +19,4 @@ if __name__ == '__main__':
     lab.write_kathara_configurations(fat_tree)
     lab.write_kathara_bgp_configuration(fat_tree)
 
-    utils.write_json_file("lab_new.json", fat_tree.to_dict())
+    utils.write_json_file("lab.json", fat_tree.to_dict())

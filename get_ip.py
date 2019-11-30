@@ -3,7 +3,7 @@
 import json
 import sys
 
-with open('lab_new.json') as lab_json:
+with open('lab.json') as lab_json:
     lab = json.load(lab_json)
     if len(sys.argv) == 1:
         print("--------------------- AGGREGATION LAYER ------------------------\n")
