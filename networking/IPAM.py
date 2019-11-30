@@ -36,7 +36,6 @@ class IPAM(object):
                 ips = assignment["ips"]
                 server_ip = next(ips)
                 assignment[server_node] = server_ip
-                print(server_node, server_ip)
                 self.ipv4_server_assignments[leaf_node] = assignment
             return assignment
         else:

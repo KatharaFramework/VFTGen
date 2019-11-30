@@ -28,7 +28,15 @@ class CollisionDomain(object):
         :return: a four ASCII char collision domain "XXXX" ("XXXX" is a new one if it is the first time that the function
                  sees the couple (node_name1, node_name2))
         """
-        if (first_node, second_node) in self.collision_domain_assignments:
+        if 'leaf' in first_node and 'server' in second_node or 'leaf' in second_node and 'server' in first_node:
+            leaf_node = first_node if 'leaf' in first_node else second_node
+            if (leaf_node, 'servers') in self.collision_domain_assignments:
+                return self.collision_domain_assignments[(leaf_node, 'servers')]
+            else:
+                collision_domain = self._get_new_collision_domain()
+                self.collision_domain_assignments[(leaf_node, 'servers')] = collision_domain
+                return collision_domain
+        elif (first_node, second_node) in self.collision_domain_assignments:
             return self.collision_domain_assignments[(first_node, second_node)]
         elif (second_node, first_node) in self.collision_domain_assignments:
             return self.collision_domain_assignments[(second_node, first_node)]
