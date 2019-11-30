@@ -8,16 +8,24 @@ class Laboratory(object):
     @staticmethod
     def write_kathara_lab_conf(node: Node):
         with open('lab/lab.conf', 'a') as lab_config:
+            server_added = False
             for interface in node.interfaces:
-                lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
+                if 'server' not in interface.neighbour_name or not server_added:
+                    if 'server' in interface.neighbour_name:
+                        server_added = True
+                    lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
 
     @staticmethod
     def write_kathara_startup(node: Node):
         os.mkdir('lab/%s' % node.name)
         os.mkdir('lab/%s/etc' % node.name)
         with open('lab/%s.startup' % node.name, 'a') as startup:
+            server_added = False
             for interface in node.interfaces:
-                startup.write('ifconfig eth%d %s/%s up\n' % (interface.number, str(interface.ip_address),
+                if 'server' not in interface.neighbour_name or not server_added:
+                    if 'server' in interface.neighbour_name:
+                        server_added = True
+                    startup.write('ifconfig eth%d %s/%s up\n' % (interface.number, str(interface.ip_address),
                                                              str(interface.network.prefixlen)))
             if node.role == 'server':
                 startup.write('route add default gw %s\n' % node.interfaces[0].neighbour_ip)
