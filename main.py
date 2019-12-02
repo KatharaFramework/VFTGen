@@ -17,6 +17,6 @@ if __name__ == '__main__':
 
     lab = Laboratory()
     lab.write_kathara_configurations(fat_tree)
-    lab.write_kathara_bgp_configuration(fat_tree)
+    lab.write_kathara_openfabric_configuration(fat_tree)
 
     utils.write_json_file("lab.json", fat_tree.to_dict())

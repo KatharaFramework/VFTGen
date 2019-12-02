@@ -1,6 +1,7 @@
 from model.FatTree import FatTree
 from model.node.Node import Node
 from networking.BGPConfigurator import BGPConfigurator
+from networking.OpenFabricConfigurator import OpenFabricConfigurator
 import os
 
 
@@ -51,3 +52,14 @@ class Laboratory(object):
 
         for (node_name, node) in topology.aggregation_layer.items():
             bgp_configurator.write_bgp_configuration(node)
+
+    @staticmethod
+    def write_kathara_openfabric_configuration(topology: FatTree):
+        openfabric_configurator = OpenFabricConfigurator()
+        for (pod_name, pod) in topology.pods.items():
+            for (node_name, node) in pod.items():
+                if node.role != 'server':
+                    openfabric_configurator.configure_node(node)
+
+        for (node_name, node) in topology.aggregation_layer.items():
+            openfabric_configurator.configure_node(node)
