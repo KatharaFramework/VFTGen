@@ -1,7 +1,7 @@
-from model.node_types.Leaf import Leaf
-from model.node_types.Server import Server
-from model.node_types.Spine import Spine
-from model.node_types.Tof import Tof
+from .node_types.Leaf import Leaf
+from .node_types.Server import Server
+from .node_types.Spine import Spine
+from .node_types.Tof import Tof
 
 
 class FatTree(object):

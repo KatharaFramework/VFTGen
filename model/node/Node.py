@@ -1,5 +1,5 @@
 from networking.IPAM import IPAM
-from model.node.Interface import Interface
+from .Interface import Interface
 
 
 class Node(object):
@@ -27,6 +27,3 @@ class Node(object):
             "neighbours": self.neighbours,
             "interfaces": [x.to_dict() for x in self.interfaces]
         }
-
-
-

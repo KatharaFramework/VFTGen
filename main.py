@@ -15,8 +15,17 @@ if __name__ == '__main__':
     fat_tree = FatTree()
     fat_tree.create(config)
 
-    lab = Laboratory()
-    lab.write_kathara_configurations(fat_tree)
-    lab.write_kathara_openfabric_configuration(fat_tree)
+    lab = Laboratory("lab")
+    lab.dump(fat_tree)
+
+    protocol = config["protocol"] if "protocol" in config else None
+    if protocol:
+        protocol_class_name = "".join(map(lambda x: x.capitalize(), protocol.split("_")))
+
+        protocol_configurator = utils.class_for_name("protocol.%s" % protocol,
+                                                     "%sConfigurator" % protocol_class_name
+                                                     )()
+
+        protocol_configurator.configure(lab, fat_tree)
 
     utils.write_json_file("lab.json", fat_tree.to_dict())

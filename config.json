@@ -1,4 +1,5 @@
 {
+  "protocol": "open_fabric",
   "pod_num": 2,
   "pod": {
     "spine_num": [2],
