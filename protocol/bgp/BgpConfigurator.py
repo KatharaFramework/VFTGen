@@ -97,7 +97,7 @@ class BgpConfigurator(IConfigurator):
         )
 
         for interface in node.interfaces:
-            if 'spine' in interface.neighbour_name:
+            if 'spine' in interface.neighbours[0][0]:
                 bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
 
         bgpd_configuration.write(BGPD_LEAF_CONFIG)
@@ -115,11 +115,11 @@ class BgpConfigurator(IConfigurator):
         )
 
         for interface in node.interfaces:
-            if 'leaf' in interface.neighbour_name:
+            if 'leaf' in interface.neighbours[0][0]:
                 bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
 
         for interface in node.interfaces:
-            if 'spine' in interface.neighbour_name or 'tof' in interface.neighbour_name:
+            if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
                 bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
 
         bgpd_configuration.write(BGPD_SPINE_CONFIG)
@@ -134,7 +134,7 @@ class BgpConfigurator(IConfigurator):
         )
 
         for interface in node.interfaces:
-            if 'spine' in interface.neighbour_name or 'tof' in interface.neighbour_name:
+            if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
                 bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
 
         bgpd_configuration.write(BGPD_TOF_CONFIG)
