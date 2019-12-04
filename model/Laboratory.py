@@ -27,14 +27,8 @@ class Laboratory(object):
 
     def write_lab_conf(self, node):
         with open('%s/lab.conf' % self.lab_dir_name, 'a') as lab_config:
-            server_added = False
-
             for interface in node.interfaces:
-                if 'server' not in interface.neighbour_name or not server_added:
-                    if 'server' in interface.neighbour_name:
-                        server_added = True
-
-                    lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
+                lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
 
     def write_startup(self, node):
         if type(node) != Server:
@@ -45,16 +39,10 @@ class Laboratory(object):
             server_added = False
 
             for interface in node.interfaces:
-                if 'server' not in interface.neighbour_name or not server_added:
-                    if 'server' in interface.neighbour_name:
-                        server_added = True
-
-                    startup.write('ifconfig eth%d %s/%s up\n' % (interface.number,
-                                                                 str(interface.ip_address),
-                                                                 str(interface.network.prefixlen)
-                                                                 )
-                                  )
-
+                startup.write('ifconfig eth%d %s/%s up\n' % (interface.number,
+                                                             str(interface.ip_address),
+                                                             str(interface.network.prefixlen)
+                                                             ))
             if type(node) == Server:
-                startup.write('route add default gw %s\n' % node.interfaces[0].neighbour_ip)
+                startup.write('route add default gw %s\n' % str(node.interfaces[0].neighbours[0][1]))
                 startup.write('/etc/init.d/apache2 start\n')
