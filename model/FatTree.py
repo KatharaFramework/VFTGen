@@ -51,12 +51,11 @@ class FatTree(object):
         :return: void
         """
         pod_info = config['pod']
-        pod_name = 'pod_%d' % pod_number
 
-        self.pods[pod_name] = {}
+        self.pods[pod_number] = {}
 
         for leaf_num in range(1, pod_info['leaf_num'] + 1):
-            self._create_rack(pod_name, pod_number, leaf_num, pod_info['spine_num'][0], pod_info['servers_for_rack'])
+            self._create_rack(pod_number, leaf_num, pod_info['spine_num'][0], pod_info['servers_for_rack'])
 
         for level, spine_nums in enumerate(pod_info['spine_num']):
             for spine_num in range(1, spine_nums + 1):
@@ -70,12 +69,11 @@ class FatTree(object):
                               config['aggregation_layer']['tof_num'][0],
                               pod_info['spine_num']
                               )
-                self.pods[pod_name][spine_name] = spine
+                self.pods[pod_number][spine_name] = spine
 
-    def _create_rack(self, pod_name, pod_number, leaf_number, connected_spines, connected_server):
+    def _create_rack(self, pod_number, leaf_number, connected_spines, connected_server):
         """
         Considering leaf as ToR creates a leaf and the servers connected
-        :param pod_name: (string) the name of the pod of the rack (ex. "pod_21")
         :param pod_number: (int) the number of the pod of the rack
         :param leaf_number: (int) the number of the leaf at the top of this rack
         :param connected_spines: number of spines connected (northbound) to the leaf at the top of this rack
@@ -85,13 +83,13 @@ class FatTree(object):
         leaf_name = 'leaf_%d_0_%d' % (pod_number, leaf_number)
 
         leaf = Leaf(leaf_name, pod_number, leaf_number, connected_spines, connected_server)
-        self.pods[pod_name][leaf_name] = leaf
+        self.pods[pod_number][leaf_name] = leaf
 
         for server_num in range(1, connected_server + 1):
             server_name = 'server_%d_%d_%d' % (pod_number, leaf_number, server_num)
 
             server = Server(server_name, leaf_name)
-            self.pods[pod_name][server_name] = server
+            self.pods[pod_number][server_name] = server
 
     def _create_aggregation_layer_level(self, level, aggregation_layer_levels, tofs_for_level, pod_levels,
                                         number_of_pods,

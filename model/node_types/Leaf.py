@@ -19,13 +19,12 @@ class Leaf(Node):
         self.name = name
         self.level = 0
         self.pod_number = pod_number
-        self._add_neighbours(pod_number, leaf_number, connected_spine, connected_server)
+        self._add_neighbours(leaf_number, connected_spine, connected_server)
         self._assign_ipv4_address_to_interfaces()
 
-    def _add_neighbours(self, pod_number, leaf_number, connected_spine, connected_server):
+    def _add_neighbours(self, leaf_number, connected_spine, connected_server):
         """
         Add neighbours to self.neighbours
-        :param pod_number: (int) the number of the pod
         :param leaf_number: (int) the number of this leaf (self) in its pod
         :param connected_spine: (int) the number spines connected northbound to this leaf
         :param connected_server: (int) the number of servers connected southbound to this leaf
@@ -33,14 +32,14 @@ class Leaf(Node):
         """
         # Adding spines
         for i in range(1, connected_spine + 1):
-            spine_name = "spine_%d_1_%d" % (pod_number, i)
+            spine_name = "spine_%d_1_%d" % (self.pod_number, i)
             collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, spine_name)
 
             self.neighbours.append((spine_name, collision_domain))
 
         # Adding servers
         for i in range(1, connected_server + 1):
-            server_name = "server_%d_%d_%d" % (pod_number, leaf_number, i)
+            server_name = "server_%d_%d_%d" % (self.pod_number, leaf_number, i)
             collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, server_name)
 
             self.neighbours.append((server_name, collision_domain))
@@ -51,12 +50,21 @@ class Leaf(Node):
                                                                    neighbour_name)
             # if server_interface is empty the node is not a server or the servers interface is not initialized
             server_interface = list(filter(lambda interface: interface.network == assignment['subnet'],
-                                    self.interfaces))
-            if not server_interface == []:
+                                           self.interfaces
+                                           )
+                                    )
+
+            if server_interface:
                 server_interface[0].neighbours.append((neighbour_name, assignment[neighbour_name]))
             else:
                 network = assignment["subnet"]
                 ipv4_address = assignment[self.name]
                 ipv4_neighbour_address = assignment[neighbour_name]
-                self.interfaces.append(Interface(len(self.interfaces), collision_domain, network, ipv4_address,
-                                                 neighbour_name, ipv4_neighbour_address))
+                self.interfaces.append(Interface(len(self.interfaces),
+                                                 collision_domain,
+                                                 network,
+                                                 ipv4_address,
+                                                 neighbour_name,
+                                                 ipv4_neighbour_address
+                                                 )
+                                       )
