@@ -10,7 +10,7 @@ ZEBRA_CONFIG = \
 hostname frr
 password frr
 enable password frr
-    """
+"""
 
 ROUTE_MAP = \
     """
@@ -18,7 +18,7 @@ ip prefix-list DC_LOCAL_SUBNET 5 permit 10.0.0.0/8 le 26
 ip prefix-list DC_LOCAL_SUBNET 10 permit 200.0.0.0/8 le 32
 route-map ACCEPT_DC_LOCAL permit 10
  match ip-address DC_LOCAL_SUBNET
-    """
+ """
 
 BGPD_BASIC_CONFIG = \
     """
@@ -27,8 +27,7 @@ router bgp {as_number}
  bgp router-id {router_id}
  bgp bestpath as-path multipath-relax
  bgp bestpath compare-routerid
-{neighbor_config}
-    """
+{neighbor_config}"""
 
 NEIGHBOR_GROUP_CONFIG = \
     """ 
@@ -36,9 +35,9 @@ neighbor {group} peer-group
  neighbor {group} remote-as external
  neighbor {group} advertisement-interval 0
  neighbor {group} timers connect 5
-    """
+"""
 
-NEIGHBOR_PEER = " neighbor eth%d interface peer-group %s\n"
+NEIGHBOR_PEER = """ neighbor eth%d interface peer-group %s\n"""
 
 BGPD_ADDRESS_FAMILY = \
     """
@@ -48,7 +47,7 @@ address-family ipv4 unicast
   redistribute connected route-map ACCEPT_DC_LOCAL
   maximum-paths 64
 exit-address-family"""
-BGPD_LEAF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="bgp bestpath as-path multipath-relax",
+BGPD_LEAF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
                                               neighbours="neighbor TOR activate"
                                               )
 BGPD_SPINE_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",

@@ -1,5 +1,5 @@
 {
-  "protocol": "rift",
+  "protocol": "open_fabric",
   "pod_num": 2,
   "pod": {
     "spine_num": [2,2,2],
