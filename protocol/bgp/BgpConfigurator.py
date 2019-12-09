@@ -1,45 +1,47 @@
 import os
 
-
 from protocol.bgp.ASManager import ASManager
 from ..IConfigurator import IConfigurator
 
+# --------------------------- Start of BGP configuration templates -----------------------------------------------
+
 ZEBRA_CONFIG = \
-"""hostname frr
+    """
+hostname frr
 password frr
 enable password frr
-"""
+    """
 
 ROUTE_MAP = \
-"""
+    """
 ip prefix-list DC_LOCAL_SUBNET 5 permit 10.0.0.0/8 le 26
 ip prefix-list DC_LOCAL_SUBNET 10 permit 200.0.0.0/8 le 32
 route-map ACCEPT_DC_LOCAL permit 10
  match ip-address DC_LOCAL_SUBNET
- 
-
-"""
+    """
 
 BGPD_BASIC_CONFIG = \
-"""router bgp {as_number}
+    """
+router bgp {as_number}
  timers bgp 3 9
  bgp router-id {router_id}
  bgp bestpath as-path multipath-relax
  bgp bestpath compare-routerid
 {neighbor_config}
-
-"""
+    """
 
 NEIGHBOR_GROUP_CONFIG = \
-""" neighbor {group} peer-group
+    """ 
+neighbor {group} peer-group
  neighbor {group} remote-as external
  neighbor {group} advertisement-interval 0
- neighbor {group} timers connect 5"""
+ neighbor {group} timers connect 5
+    """
 
 NEIGHBOR_PEER = " neighbor eth%d interface peer-group %s\n"
 
 BGPD_ADDRESS_FAMILY = \
-"""
+    """
 {before}
 address-family ipv4 unicast
   {neighbours}
@@ -56,9 +58,20 @@ BGPD_TOF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
                                              neighbours="neighbor fabric activate"
                                              )
 
+# ---------------------------  End of BGP configuration templates -----------------------------------------------
 
 class BgpConfigurator(IConfigurator):
+    """
+    This class is used to write the BGP configuration of nodes in a FatTree object
+    """
+
     def _configure_node(self, lab, node):
+        """
+        Write the bgp configuration for the node
+        :param lab: a Laboratory object (used to take information about the laboratory dir)
+        :param node: a Node object of a FatTree topology
+        :return:
+        """
         with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
             lab_config.write('%s[image]="kathara/frr"\n' % node.name)
 
@@ -85,10 +98,21 @@ class BgpConfigurator(IConfigurator):
 
     @staticmethod
     def _write_route_map(bgpd_configuration):
+        """
+        write the route-map ROUTE_MAP in bgpd_configuration file
+        :param bgpd_configuration: the /etc/frr/bgpd.conf file of a Node in the FatTree topology
+        :return:
+        """
         bgpd_configuration.write(ROUTE_MAP)
 
     @staticmethod
     def _write_bgp_leaf_configuration(node, bgpd_configuration):
+        """
+        write the bgp configuration of Leaf Node
+        :param node: a Leaf node
+        :param bgpd_configuration: the /etc/frr/bgpd.conf file of the Leaf node in the FatTree topology
+        :return:
+        """
         bgpd_configuration.write(
             BGPD_BASIC_CONFIG.format(as_number=ASManager.get_instance().get_as_number(node),
                                      router_id=str(node.interfaces[0].ip_address),
@@ -104,6 +128,12 @@ class BgpConfigurator(IConfigurator):
 
     @staticmethod
     def _write_bgp_spine_configuration(node, bgpd_configuration):
+        """
+        write the bgp configuration of Spine Node
+        :param node: a Spine node
+        :param bgpd_configuration: the /etc/frr/bgpd.conf file of the Spine node in the FatTree topology
+        :return:
+        """
         bgpd_configuration.write(
             BGPD_BASIC_CONFIG.format(as_number=ASManager.get_instance().get_as_number(node),
                                      router_id=str(node.interfaces[0].ip_address),
@@ -126,6 +156,12 @@ class BgpConfigurator(IConfigurator):
 
     @staticmethod
     def _write_bgp_tof_configuration(node, bgpd_configuration):
+        """
+        write the bgp configuration of Tof Node
+        :param node: a Tof node
+        :param bgpd_configuration: the /etc/frr/bgpd.conf file of the Tof node in the FatTree topology
+        :return:
+        """
         bgpd_configuration.write(
             BGPD_BASIC_CONFIG.format(as_number=ASManager.get_instance().get_as_number(node),
                                      router_id=str(node.interfaces[0].ip_address),

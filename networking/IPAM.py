@@ -5,6 +5,9 @@ BASE_IPV4_SERVER_NET = ipaddress.ip_network("200.0.0.0/8")
 
 
 class IPAM(object):
+    """
+    This class manage the ipv4 address assignments for the nodes in a FatTree object
+    """
     __slots__ = ['ipv4_subnets', 'ipv4_server_subnets', 'ipv4_assignments', 'ipv4_server_assignments']
 
     __instance = None
@@ -27,6 +30,21 @@ class IPAM(object):
             IPAM.__instance = self
 
     def get_ipv4_server_address_pair(self, collision_domain, first_node, second_node):
+        """
+        Get an ipv4 address pair for a Leaf node and a Server Node (a /24 from 200.0.0.0/8)
+        :param collision_domain: the collision domain id of the link between first_node and second_node
+        :param first_node: a Node object
+        :param second_node: a Node object (one node is a server and the other one a leaf, order is not important)
+        :return: an assignment object :
+            {
+                collision_domain: (string) collision_domain,
+                subnet: (IPV4Network) the ipv4 subnet (/24)
+                ips: object from IPV4Address that knows the free ip in the subnet
+                leaf_node: (IPV4Address) first_node ip address if it is a Leaf else second_node ip address
+                server_nodes: (IPV4Address list) list of ips of server nodes already in the subnet +
+                              (first_node ip address if is a server else second_node ip address)
+            }
+        """
         if first_node in self.ipv4_server_assignments or second_node in self.ipv4_server_assignments:
             leaf_node, server_node = (first_node, second_node) if first_node in self.ipv4_server_assignments else \
                 (second_node, first_node)
@@ -57,6 +75,19 @@ class IPAM(object):
             return new_assignment
 
     def get_ipv4_address_pair(self, collision_domain, first_node, second_node):
+        """
+          Get an ipv4 address pair for a nodes pair (not used server-leaf or leaf-server) (a /30 from 10.0.0.0/8)
+          :param collision_domain: the collision domain id of the link between first_node and second_node
+          :param first_node: a Node object
+          :param second_node: a Node object
+          :return: an assignment object :
+              {
+                  collision_domain: (string) collision_domain,
+                  subnet: (IPV4Network) the ipv4 subnet (/24)
+                  first_node: (IPV4Address) first_node ipv4 address
+                  second_node: (IPV4Address) second_node ipv4 address
+              }
+          """
         if 'server' in first_node or 'server' in second_node:
             return self.get_ipv4_server_address_pair(collision_domain, first_node, second_node)
         else:

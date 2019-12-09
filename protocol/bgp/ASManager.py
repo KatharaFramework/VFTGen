@@ -4,6 +4,9 @@ from model.node_types.Tof import Tof
 
 
 class ASManager(object):
+    """
+    Singleton class that manage the AS number for the BGP configurations
+    """
     __slots__ = ['current_as_number', 'max_as_number', 'as_number_assignments']
 
     __instance = None
@@ -26,6 +29,11 @@ class ASManager(object):
             ASManager.__instance = self
 
     def get_as_number(self, node):
+        """
+        Takes a node Node in input and returns the correct AS number for that node
+        :param node:
+        :return: (int) the correct AS number for node
+        """
         if type(node) == Leaf:
             return self._get_new_as_number()
 
@@ -48,6 +56,10 @@ class ASManager(object):
                 return as_number
 
     def _get_new_as_number(self):
+        """
+        Returns a new AS number and increment the current_as_number
+        :return: (int) a new AS number
+        """
         if self.current_as_number <= self.max_as_number:
             as_number = self.current_as_number
             self.current_as_number += 1

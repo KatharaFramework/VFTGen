@@ -3,6 +3,11 @@ from .Interface import Interface
 
 
 class Node(object):
+    """
+    Abstract Class
+    This class represents a node in a network topology
+    """
+
     __slots__ = ['role', 'name', 'level', 'neighbours', 'interfaces']
 
     def __init__(self):
@@ -10,6 +15,10 @@ class Node(object):
         self.interfaces = []
 
     def _assign_ipv4_address_to_interfaces(self):
+        """
+        Assigns ipv4 address to interfaces fetching self.neighbours
+        :return:
+        """
         for neighbour_name, collision_domain in self.neighbours:
             assignment = IPAM.get_instance().get_ipv4_address_pair(collision_domain, self.name, neighbour_name)
 

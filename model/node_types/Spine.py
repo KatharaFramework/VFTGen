@@ -18,7 +18,7 @@ class Spine(Node):
         super().__init__()
         self.role = 'spine'
         self.name = name
-        self.level = level
+        self.level = level + 1
         self.pod_number = pod_number
         self._add_neighbours(pod_number, level, pod_total_levels, connected_leafs, connected_tofs, connected_spines)
         self._assign_ipv4_address_to_interfaces()

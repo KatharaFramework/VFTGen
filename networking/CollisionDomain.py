@@ -47,6 +47,10 @@ class CollisionDomain(object):
             return collision_domain
 
     def _get_new_collision_domain(self):
+        """
+        Get a new collision domain incrementing the string by one
+        :return:
+        """
         (first, second, third, fourth) = self.current_collision_domain
         first, second, third, fourth = ord(first), ord(second), ord(third), ord(fourth)
 
@@ -61,6 +65,14 @@ class CollisionDomain(object):
 
     @staticmethod
     def _get_next_char(first_char, second_char, inc_second=False):
+        """
+
+        :param first_char: the char that you want increment
+        :param second_char: the char after the one you want increment
+        :param inc_second: a bool used to increment the second_char in case of overflow
+        :return: (first_char + 1, second_char): if there's not overflow
+                 (A, second_char + 1)         : if there's overflow
+        """
         if second_char >= ord('Z'):
             first_char += 1
             second_char = ord('A')
