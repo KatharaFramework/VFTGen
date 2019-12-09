@@ -11,7 +11,7 @@ with open('lab.json') as lab_json:
             print(node["name"], [interface["ip_address"] for interface in node["interfaces"]])
 
         for (k, p) in lab["pod"].items():
-            print("\n--------------------------- %s ------------------------------\n" % k)
+            print("\n--------------------------- pod_%s ------------------------------\n" % k)
             for node in p.values():
                 print(node["name"], [interface["ip_address"] for interface in node["interfaces"]])
     else:

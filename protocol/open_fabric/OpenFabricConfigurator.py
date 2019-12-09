@@ -1,5 +1,6 @@
 import os
 
+from .AreaManager import AreaManager
 from ..IConfigurator import IConfigurator
 
 # --------------------------- Start of OpenFabric configuration templates ---------------------------------------------
@@ -41,7 +42,7 @@ class OpenFabricConfigurator(IConfigurator):
                 fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % interface.number)
 
             fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION %
-                                        self._get_net_iso_format(node.interfaces[0].ip_address)
+                                        self._get_net_iso_format(node)
                                         )
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
@@ -49,11 +50,14 @@ class OpenFabricConfigurator(IConfigurator):
             startup.write('sysctl -w net.ipv4.fib_multipath_hash_policy=1\n')
 
     @staticmethod
-    def _get_net_iso_format(ip_address):
+    def _get_net_iso_format(node):
         """
-        Takes an ip_address and return a net in iso format
-        :param ip_address: (IPv4Address) the ip address of a node
+        Takes a node and return a net in iso format from the ipv4 address of the first interface of node
+        :param node: (Node) the node for which you want the net id in iso format
         :return: (string) a net identifier in iso format
         """
-        s = "".join(map(lambda x: '%03d' % int(x), str(ip_address).split('.')))
-        return '49.0001.%s.%s.%s.00' % (s[0:4], s[4:8], s[8:12])
+        s = "".join(map(lambda x: '%03d' % int(x), str(node.interfaces[0].ip_address).split('.')))
+        area = AreaManager.get_instance().get_net_number(node)
+
+        return '%s.%s.%s.%s.00' % (area, s[0:4], s[4:8], s[8:12])
+
