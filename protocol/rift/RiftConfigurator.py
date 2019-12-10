@@ -29,7 +29,7 @@ RIFT_CONFIG_V4PREFIXES_TEMPLATE = \
     """     
         v4prefixes:
           - address: %s
-            mask: 30
+            mask: 24
             metric: 1 
 """
 
