@@ -6,7 +6,9 @@ class Interface(object):
         self.collision_domain = collision_domain
         self.network = network
         self.ip_address = ip_address
-        self.neighbours = [(neighbour_name, neighbour_ip)]
+        self.neighbours = []
+        if neighbour_name and neighbour_ip:
+            self.neighbours.append((neighbour_name, neighbour_ip))
 
     def to_dict(self):
         return {
@@ -15,5 +17,4 @@ class Interface(object):
             "network": str(self.network),
             "ip_address": str(self.ip_address),
             "neighbours": [(neighbour_name, str(ip)) for (neighbour_name, ip) in self.neighbours],
-
         }

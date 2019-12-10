@@ -25,9 +25,15 @@ RIFT_CONFIG_INTERFACE_TEMPLATE = \
          
 """
 
-RIFT_CONFIG_V4PREFIXES_TEMPLATE = \
+RIFT_CONFIG_V4PREFIXES_LOOPBACK_TEMPLATE = \
     """     
         v4prefixes:
+          - address: %s
+            mask: 32
+            metric: 1 
+"""
+RIFT_CONFIG_V4PREFIXES_SERVER_TEMPLATE = \
+ """     
           - address: %s
             mask: 24
             metric: 1 
@@ -48,8 +54,8 @@ RIFT_PYTHON_DIR = "D:\\Documenti\\Università\\Magistrale\\Tirocinio\\rift-pytho
 class RiftConfigurator(IConfigurator):
     """
     This class is used to write the RIFT configuration of nodes in a FatTree object
-    RIFT is implemented using rift-python (https://github.com/brunorijsman/rift-python) and deploying it in
-    kathara containers
+    RIFT is implemented using rift-python (https://github.com/brunorijsman/rift-python)  of Bruno Rijsman
+    and deploying it in kathara containers
     """
     def _configure_node(self, lab, node: Node):
         """
@@ -71,11 +77,18 @@ class RiftConfigurator(IConfigurator):
 
                     rift_config.write(RIFT_CONFIG_TEMPLATE % (node.name, node_level))
                     for interface in node.interfaces:
-                        rift_config.write(RIFT_CONFIG_INTERFACE_TEMPLATE % interface.number)
+                        if interface.collision_domain != 'loopback':
+                            rift_config.write(RIFT_CONFIG_INTERFACE_TEMPLATE % interface.number)
+
+                    # announce node loopback
+                    rift_config.write(
+                        RIFT_CONFIG_V4PREFIXES_LOOPBACK_TEMPLATE % str(node.interfaces[-1].ip_address)
+                    )
+                    # announce server ips
                     if type(node) == Leaf:
-                        server_interface = list(filter(lambda interface: '/24' in str(interface.network), node.interfaces))
+                        server_interface = list(filter(lambda eth: '/24' in str(eth.network), node.interfaces))
                         rift_config.write(
-                            RIFT_CONFIG_V4PREFIXES_TEMPLATE % str(server_interface[0].network.network_address)
+                            RIFT_CONFIG_V4PREFIXES_SERVER_TEMPLATE % str(server_interface[0].network.network_address)
                         )
                 with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
                     startup.write(

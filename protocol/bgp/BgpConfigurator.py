@@ -59,6 +59,7 @@ BGPD_TOF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
 
 # ---------------------------  End of BGP configuration templates -----------------------------------------------
 
+
 class BgpConfigurator(IConfigurator):
     """
     This class is used to write the BGP configuration of nodes in a FatTree object
@@ -114,14 +115,15 @@ class BgpConfigurator(IConfigurator):
         """
         bgpd_configuration.write(
             BGPD_BASIC_CONFIG.format(as_number=ASManager.get_instance().get_as_number(node),
-                                     router_id=str(node.interfaces[0].ip_address),
+                                     router_id=str(node.interfaces[-1].ip_address),
                                      neighbor_config=NEIGHBOR_GROUP_CONFIG.format(group="TOR")
                                      )
         )
 
         for interface in node.interfaces:
-            if 'spine' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
+            if interface.collision_domain != 'loopback':
+                if 'spine' in interface.neighbours[0][0]:
+                    bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
 
         bgpd_configuration.write(BGPD_LEAF_CONFIG)
 
@@ -135,7 +137,7 @@ class BgpConfigurator(IConfigurator):
         """
         bgpd_configuration.write(
             BGPD_BASIC_CONFIG.format(as_number=ASManager.get_instance().get_as_number(node),
-                                     router_id=str(node.interfaces[0].ip_address),
+                                     router_id=str(node.interfaces[-1].ip_address),
                                      neighbor_config="\n".join([NEIGHBOR_GROUP_CONFIG.format(group="TOR"),
                                                                 NEIGHBOR_GROUP_CONFIG.format(group="fabric")
                                                                 ]
@@ -144,12 +146,14 @@ class BgpConfigurator(IConfigurator):
         )
 
         for interface in node.interfaces:
-            if 'leaf' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
+            if interface.collision_domain != 'loopback':
+                if 'leaf' in interface.neighbours[0][0]:
+                    bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
 
         for interface in node.interfaces:
-            if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
+            if interface.collision_domain != 'loopback':
+                if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
+                    bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
 
         bgpd_configuration.write(BGPD_SPINE_CONFIG)
 
@@ -163,13 +167,14 @@ class BgpConfigurator(IConfigurator):
         """
         bgpd_configuration.write(
             BGPD_BASIC_CONFIG.format(as_number=ASManager.get_instance().get_as_number(node),
-                                     router_id=str(node.interfaces[0].ip_address),
+                                     router_id=str(node.interfaces[-1].ip_address),
                                      neighbor_config=NEIGHBOR_GROUP_CONFIG.format(group="fabric")
                                      )
         )
 
         for interface in node.interfaces:
-            if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
+            if interface.collision_domain != 'loopback':
+                if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
+                    bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
 
         bgpd_configuration.write(BGPD_TOF_CONFIG)

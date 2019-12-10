@@ -2,13 +2,18 @@ import ipaddress
 
 BASE_IPV4_NET = ipaddress.ip_network("10.0.0.0/8")
 BASE_IPV4_SERVER_NET = ipaddress.ip_network("200.0.0.0/8")
+BASE_IPV4_LOOPBACK_NET = ipaddress.ip_network("127.0.0.0/8")
 
 
 class IPAM(object):
     """
     This class manage the ipv4 address assignments for the nodes in a FatTree object
     """
-    __slots__ = ['ipv4_subnets', 'ipv4_server_subnets', 'ipv4_assignments', 'ipv4_server_assignments']
+    __slots__ = \
+        [
+            'ipv4_subnets', 'ipv4_server_subnets', 'ipv4_assignments', 'ipv4_server_assignments',
+            'ipv4_loopback_ips'
+        ]
 
     __instance = None
 
@@ -25,8 +30,10 @@ class IPAM(object):
         else:
             self.ipv4_subnets = BASE_IPV4_NET.subnets(new_prefix=30)
             self.ipv4_server_subnets = BASE_IPV4_SERVER_NET.subnets(new_prefix=24)
+            self.ipv4_loopback_ips = BASE_IPV4_LOOPBACK_NET.hosts()
             self.ipv4_assignments = {}
             self.ipv4_server_assignments = {}
+
             IPAM.__instance = self
 
     def get_ipv4_server_address_pair(self, collision_domain, first_node, second_node):
@@ -109,3 +116,14 @@ class IPAM(object):
                 self.ipv4_assignments[(first_node, second_node)] = new_assignment
 
                 return new_assignment
+
+    def get_ipv4_loopback_address(self, node_name):
+        loopback_address = next(self.ipv4_loopback_ips)
+
+        new_assignment = {
+            "collision_domain": "loopback",
+            "subnet": BASE_IPV4_LOOPBACK_NET,
+            node_name: loopback_address
+        }
+
+        return new_assignment

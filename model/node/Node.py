@@ -28,6 +28,10 @@ class Node(object):
 
             self.interfaces.append(Interface(len(self.interfaces), collision_domain, network, ipv4_address,
                                              neighbour_name, ipv4_neighbour_address))
+        # assign the loopback address
+        loopback_assignment = IPAM.get_instance().get_ipv4_loopback_address(self.name)
+        self.interfaces.append(Interface(-1, loopback_assignment['collision_domain'], loopback_assignment['subnet'],
+                                         loopback_assignment[self.name], None, None))
 
     def to_dict(self):
         return {
