@@ -9,11 +9,8 @@ class IPAM(object):
     """
     This class manage the ipv4 address assignments for the nodes in a FatTree object
     """
-    __slots__ = \
-        [
-            'ipv4_subnets', 'ipv4_server_subnets', 'ipv4_assignments', 'ipv4_server_assignments',
-            'ipv4_loopback_ips'
-        ]
+    __slots__ = ['ipv4_subnets', 'ipv4_server_subnets', 'ipv4_assignments', 'ipv4_server_assignments',
+                 'ipv4_loopback_ips']
 
     __instance = None
 
@@ -31,6 +28,7 @@ class IPAM(object):
             self.ipv4_subnets = BASE_IPV4_NET.subnets(new_prefix=30)
             self.ipv4_server_subnets = BASE_IPV4_SERVER_NET.subnets(new_prefix=24)
             self.ipv4_loopback_ips = BASE_IPV4_LOOPBACK_NET.hosts()
+
             self.ipv4_assignments = {}
             self.ipv4_server_assignments = {}
 
@@ -55,13 +53,16 @@ class IPAM(object):
         if first_node in self.ipv4_server_assignments or second_node in self.ipv4_server_assignments:
             leaf_node, server_node = (first_node, second_node) if first_node in self.ipv4_server_assignments else \
                 (second_node, first_node)
+
             assignment = self.ipv4_server_assignments[leaf_node]
+
             if server_node not in assignment:
-                subnet = assignment["subnet"]
                 ips = assignment["ips"]
                 server_ip = next(ips)
                 assignment[server_node] = server_ip
+
                 self.ipv4_server_assignments[leaf_node] = assignment
+
             return assignment
         else:
             subnet = next(self.ipv4_server_subnets)
@@ -70,6 +71,7 @@ class IPAM(object):
             leaf_node, server_node = (first_node, second_node) if 'leaf' in first_node else (second_node, first_node)
             leaf_ip = next(ips)
             server_ip = next(ips)
+
             new_assignment = {
                 "collision_domain": collision_domain,
                 "subnet": subnet,
@@ -79,6 +81,7 @@ class IPAM(object):
             }
 
             self.ipv4_server_assignments[first_node if 'leaf' in first_node else second_node] = new_assignment
+
             return new_assignment
 
     def get_ipv4_address_pair(self, collision_domain, first_node, second_node):
@@ -120,10 +123,7 @@ class IPAM(object):
     def get_ipv4_loopback_address(self, node_name):
         loopback_address = next(self.ipv4_loopback_ips)
 
-        new_assignment = {
-            "collision_domain": "loopback",
+        return {
             "subnet": BASE_IPV4_LOOPBACK_NET,
-            node_name: loopback_address
+            "ip": loopback_address
         }
-
-        return new_assignment

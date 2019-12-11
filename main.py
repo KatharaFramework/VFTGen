@@ -1,9 +1,9 @@
-import utils
 import os
 import shutil
+
+import utils
 from model.FatTree import FatTree
 from model.Laboratory import Laboratory
-
 
 if __name__ == '__main__':
     if os.path.isdir('lab'):

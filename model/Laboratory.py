@@ -40,9 +40,8 @@ class Laboratory(object):
         :return:
         """
         with open('%s/lab.conf' % self.lab_dir_name, 'a') as lab_config:
-            for interface in node.interfaces:
-                if interface.collision_domain != 'loopback':
-                    lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
+            for interface in node.get_phy_interfaces():
+                lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
 
     def write_startup(self, node):
         """
@@ -56,17 +55,11 @@ class Laboratory(object):
 
         with open('%s/%s.startup' % (self.lab_dir_name, node.name), 'a') as startup:
             for interface in node.interfaces:
-                if interface.number == -1:
-                    startup.write('ifconfig lo %s/%s up\n' % (str(interface.ip_address),
-                                                            str(interface.network.prefixlen)
-                                                            )
-                                  )
-                else:
-                    startup.write('ifconfig eth%d %s/%s up\n' % (interface.number,
-                                                                 str(interface.ip_address),
-                                                                 str(interface.network.prefixlen)
-                                                                 )
-                                  )
+                startup.write('ifconfig %s %s/%s up\n' % (interface.get_name(),
+                                                          str(interface.ip_address),
+                                                          str(interface.network.prefixlen)
+                                                          )
+                              )
 
             if type(node) == Server:
                 startup.write('route add default gw %s\n' % str(node.interfaces[0].neighbours[0][1]))

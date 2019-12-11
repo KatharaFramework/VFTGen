@@ -1,7 +1,8 @@
-from ..node.Node import Node
+from model.node.Interface import Interface
+from model.node.LoopbackInterface import LoopbackInterface
 from networking.CollisionDomain import CollisionDomain
 from networking.IPAM import IPAM
-from model.node.Interface import Interface
+from ..node.Node import Node
 
 
 class Leaf(Node):
@@ -68,8 +69,7 @@ class Leaf(Node):
                                                  ipv4_neighbour_address
                                                  )
                                        )
-        # assign the loopback address
+
+        # Assign the loopback address
         loopback_assignment = IPAM.get_instance().get_ipv4_loopback_address(self.name)
-        self.interfaces.append(
-            Interface(-1, loopback_assignment['collision_domain'], loopback_assignment['subnet'],
-                      loopback_assignment[self.name], None, None))
+        self.interfaces.append(LoopbackInterface(0, loopback_assignment['subnet'], loopback_assignment["ip"]))

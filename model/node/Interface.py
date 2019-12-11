@@ -6,9 +6,10 @@ class Interface(object):
         self.collision_domain = collision_domain
         self.network = network
         self.ip_address = ip_address
-        self.neighbours = []
-        if neighbour_name and neighbour_ip:
-            self.neighbours.append((neighbour_name, neighbour_ip))
+        self.neighbours = [(neighbour_name, neighbour_ip)]
+
+    def get_name(self):
+        return "eth%d" % self.number
 
     def to_dict(self):
         return {

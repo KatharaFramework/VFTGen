@@ -1,5 +1,6 @@
 from networking.IPAM import IPAM
 from .Interface import Interface
+from .LoopbackInterface import LoopbackInterface
 
 
 class Node(object):
@@ -27,11 +28,19 @@ class Node(object):
             ipv4_neighbour_address = assignment[neighbour_name]
 
             self.interfaces.append(Interface(len(self.interfaces), collision_domain, network, ipv4_address,
-                                             neighbour_name, ipv4_neighbour_address))
-        # assign the loopback address
+                                             neighbour_name, ipv4_neighbour_address
+                                             )
+                                   )
+
+        # Assign the loopback address
         loopback_assignment = IPAM.get_instance().get_ipv4_loopback_address(self.name)
-        self.interfaces.append(Interface(-1, loopback_assignment['collision_domain'], loopback_assignment['subnet'],
-                                         loopback_assignment[self.name], None, None))
+        self.interfaces.append(LoopbackInterface(0, loopback_assignment['subnet'], loopback_assignment["ip"]))
+
+    def get_lo_interfaces(self):
+        return sorted(list(filter(lambda x: type(x) == LoopbackInterface, self.interfaces)), key=lambda x: x.number)
+
+    def get_phy_interfaces(self):
+        return sorted(list(set(self.interfaces) - set(self.get_lo_interfaces())), key=lambda x: x.number)
 
     def to_dict(self):
         return {
