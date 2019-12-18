@@ -1,12 +1,12 @@
 {
   "protocol": "bgp",
-  "pod_num": 2,
+  "pod_num": 5,
   "pod": {
-    "spine_num": [2],
-    "leaf_num" : 2,
+    "spine_num": [50,50,50],
+    "leaf_num" : 5,
     "servers_for_rack": 1
   },
   "aggregation_layer": {
-    "tof_num": [2]
+    "tof_num": [5]
   }
 }
