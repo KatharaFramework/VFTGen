@@ -1,0 +1,17 @@
+{
+    "aggregation_layer": {
+        "number_of_planes": 1,
+        "tof_num": [
+            6
+        ]
+    },
+    "pod": {
+        "leaf_num": 6,
+        "servers_for_rack": 1,
+        "spine_num": [
+            6
+        ]
+    },
+    "pod_num": 2,
+    "protocol": "bgp"
+}
