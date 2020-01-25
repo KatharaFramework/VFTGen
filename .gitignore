@@ -5,4 +5,3 @@ __init__
 lab/
 lab.json
 new_lab.json
-*.pcap
