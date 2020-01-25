@@ -12,8 +12,8 @@ if __name__ == '__main__':
         shutil.rmtree('lab')
     os.mkdir('lab')
 
-    config = utils.three_level_fat_tree_config(6, 6, 6, 1, 'bgp')
-    utils.write_json_file("new_config.json", config)
+    config = utils.read_config('config.json')
+
     fat_tree = FatTree()
     fat_tree.create(config)
 
