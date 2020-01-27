@@ -3,7 +3,9 @@ from networking.CollisionDomain import CollisionDomain
 
 
 class Spine(Node):
-    def __init__(self, name, pod_number, level, pod_total_levels, connected_leafs, connected_tofs, connected_spines):
+    def __init__(self, name, pod_number, level, pod_total_levels, connected_leafs, connected_spines,
+                 plane=0,
+                 tof_for_plane=0):
         """
         Initialize the spine object assigning name and populating its neighbours
         :param name: (string) the name of the spine node
@@ -11,27 +13,31 @@ class Spine(Node):
         :param level: (int) the level of this spine
         :param pod_total_levels: (int) the total level of the pods
         :param connected_leafs: (int) the number of leaf southbound connected to this spine
-        :param connected_tofs: (int) the number of tof northbound connected to this spine
         :param connected_spines: (int list) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
+        :param plane: (int, default=0) the number of planes in the fabric
+        :param tof_for_plane: (int, default=0) the number of tof for plane
         """
         super().__init__()
         self.role = 'spine'
         self.name = name
         self.level = level + 1
         self.pod_number = pod_number
-        self._add_neighbours(level, pod_total_levels, connected_leafs, connected_tofs, connected_spines)
+        self._add_neighbours(level, pod_total_levels, connected_leafs, connected_spines, plane,
+                             tof_for_plane)
         self._assign_ipv4_address_to_interfaces()
 
-    def _add_neighbours(self, level, pod_total_levels, connected_leafs, connected_tofs, connected_spines):
+    def _add_neighbours(self, level, pod_total_levels, connected_leafs, connected_spines, plane,
+                        tof_for_plane):
         """
         Adds all the neighbours of this spine in self.neighbours as (neighbour_name, collision_domain)
         :param level: (int) the level of this spine
         :param pod_total_levels: (int) the total level of the pods
         :param connected_leafs: (int, default=0) the number of leaf southbound connected to this spine
-        :param connected_tofs: (int, default=0) the number of tof northbound connected to this spine
         :param connected_spines: (int list, default=[]) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
+        :param number_of_planes: (int, default=0) the number of planes in the fabric
+        :param tof_for_plane: (int, default=0) the number of tof for plane
         :return: void
         """
         real_level = level+1
@@ -45,10 +51,8 @@ class Spine(Node):
 
             if pod_total_levels == 1:
                 # If it is the last level of spines then connect this spine to northbound tofs in the aggregation layer
-
-                for tof_num in range(1, connected_tofs + 1):
-                    tof_name = 'tof_%d_%d' % (real_level + 1, tof_num)
-
+                for tof_num in range(1, tof_for_plane + 1):
+                    tof_name = 'tof_%d_%d_%d' % (plane, real_level + 1, tof_num)
                     self._add_neighbour(tof_name)
             else:
                 # If it is not the last level of the pod then connects this spine to northbound spines of
@@ -68,9 +72,8 @@ class Spine(Node):
             if real_level == pod_total_levels:
                 # If it is the last level of the pod then connects northbound all the tof in the first level of the
                 # aggregation layer
-                for tof_num in range(1, connected_tofs + 1):
-                    tof_name = 'tof_%d_%d' % (real_level + 1, tof_num)
-
+                for tof_num in range(1, tof_for_plane + 1):
+                    tof_name = 'tof_%d_%d_%d' % (plane, real_level + 1, int(plane * tof_num))
                     self._add_neighbour(tof_name)
             else:
                 # If it is not the last level of spine then connects northbound this spine to all the spine of the
