@@ -25,17 +25,18 @@ class FatTree(object):
         :param config: the conf read from "config.json"
         :return: void
         """
-        pod_levels = len(config['pod']['spine_num'])
+        pod_levels = len(config['pod']['spines_for_level'])
 
-        for i in range(1, config['pod_num'] + 1):
+        for i in range(1, config['number_of_pods'] + 1):
             self._create_pod(i, config)
 
         aggregation_layer_level = pod_levels + 1
         southbound_spines = config['redundancy_factor']
         for plane in range(1, config['aggregation_layer']['number_of_planes'] + 1):
-            tofs_for_plane = config['aggregation_layer']['tof_for_plane']
+            tofs_for_plane = config['aggregation_layer']['tofs_for_plane']
 
-            self._create_aggregation_layer_plane(plane, tofs_for_plane, aggregation_layer_level, config['pod_num'],
+            self._create_aggregation_layer_plane(plane, tofs_for_plane, aggregation_layer_level,
+                                                 config['number_of_pods'],
                                                  southbound_spines)
 
     def _create_pod(self, pod_number, config):
@@ -49,11 +50,11 @@ class FatTree(object):
 
         self.pods[pod_number] = {}
 
-        for leaf_num in range(1, pod_info['leaf_num'] + 1):
-            self._create_rack(pod_number, leaf_num, pod_info['spine_num'][0], pod_info['servers_for_rack'])
+        for leaf_num in range(1, pod_info['leafs_for_pod'] + 1):
+            self._create_rack(pod_number, leaf_num, pod_info['spines_for_level'][0], pod_info['servers_for_rack'])
 
-        for level, spine_nums in enumerate(pod_info['spine_num']):
-            if level == len(pod_info['spine_num']) - 1:
+        for level, spine_nums in enumerate(pod_info['spines_for_level']):
+            if level == len(pod_info['spines_for_level']) - 1:
                 spine_for_plane = int(spine_nums / config['aggregation_layer']['number_of_planes'])
                 for plane in range(1,config['aggregation_layer']['number_of_planes']+1):
                     for spine_num in range(1, spine_for_plane + 1):
@@ -63,11 +64,11 @@ class FatTree(object):
                         spine = Spine(spine_name,
                                       pod_number,
                                       level,
-                                      len(pod_info['spine_num']),
-                                      pod_info['leaf_num'],
-                                      pod_info['spine_num'],
+                                      len(pod_info['spines_for_level']),
+                                      pod_info['leafs_for_pod'],
+                                      pod_info['spines_for_level'],
                                       plane=plane,
-                                      tof_for_plane=config['aggregation_layer']['tof_for_plane']
+                                      tofs_for_plane=config['aggregation_layer']['tofs_for_plane']
                                       )
                         self.pods[pod_number][spine_name] = spine
             else:
@@ -76,9 +77,9 @@ class FatTree(object):
                     spine = Spine(spine_name,
                                   pod_number,
                                   level,
-                                  len(pod_info['spine_num']),
-                                  pod_info['leaf_num'],
-                                  pod_info['spine_num'],
+                                  len(pod_info['spines_for_level']),
+                                  pod_info['leafs_for_pod'],
+                                  pod_info['spines_for_level'],
                                   )
                     self.pods[pod_number][spine_name] = spine
 
@@ -120,7 +121,7 @@ class FatTree(object):
         for tof_number in range(1, tofs_for_plane + 1):
             tof_name = 'tof_%d_%d_%d' % (plane, aggregation_layer_level, tof_number)
 
-            tof = Tof(tof_name, plane, aggregation_layer_level, tofs_for_plane,
+            tof = Tof(tof_name, plane, aggregation_layer_level,
                       number_of_pods=number_of_pods,
                       southbound_spines_connected_per_pod=southbound_spines_connected
                       )

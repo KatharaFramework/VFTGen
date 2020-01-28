@@ -5,7 +5,7 @@ from networking.CollisionDomain import CollisionDomain
 class Spine(Node):
     def __init__(self, name, pod_number, level, pod_total_levels, connected_leafs, connected_spines,
                  plane=0,
-                 tof_for_plane=0):
+                 tofs_for_plane=0):
         """
         Initialize the spine object assigning name and populating its neighbours
         :param name: (string) the name of the spine node
@@ -16,7 +16,7 @@ class Spine(Node):
         :param connected_spines: (int list) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
         :param plane: (int, default=0) the number of planes in the fabric
-        :param tof_for_plane: (int, default=0) the number of tof for plane
+        :param tofs_for_plane: (int, default=0) the number of tof for plane
         """
         super().__init__()
         self.role = 'spine'
@@ -24,11 +24,11 @@ class Spine(Node):
         self.level = level + 1
         self.pod_number = pod_number
         self._add_neighbours(level, pod_total_levels, connected_leafs, connected_spines, plane,
-                             tof_for_plane)
+                             tofs_for_plane)
         self._assign_ipv4_address_to_interfaces()
 
     def _add_neighbours(self, level, pod_total_levels, connected_leafs, connected_spines, plane,
-                        tof_for_plane):
+                        tofs_for_plane):
         """
         Adds all the neighbours of this spine in self.neighbours as (neighbour_name, collision_domain)
         :param level: (int) the level of this spine
@@ -37,7 +37,7 @@ class Spine(Node):
         :param connected_spines: (int list, default=[]) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
         :param number_of_planes: (int, default=0) the number of planes in the fabric
-        :param tof_for_plane: (int, default=0) the number of tof for plane
+        :param tofs_for_plane: (int, default=0) the number of tof for plane
         :return: void
         """
         real_level = level+1
@@ -51,7 +51,7 @@ class Spine(Node):
 
             if pod_total_levels == 1:
                 # If it is the last level of spines then connect this spine to northbound tofs in the aggregation layer
-                for tof_num in range(1, tof_for_plane + 1):
+                for tof_num in range(1, tofs_for_plane + 1):
                     tof_name = 'tof_%d_%d_%d' % (plane, real_level + 1, tof_num)
                     self._add_neighbour(tof_name)
             else:
@@ -72,7 +72,7 @@ class Spine(Node):
             if real_level == pod_total_levels:
                 # If it is the last level of the pod then connects northbound all the tof in the first level of the
                 # aggregation layer
-                for tof_num in range(1, tof_for_plane + 1):
+                for tof_num in range(1, tofs_for_plane + 1):
                     tof_name = 'tof_%d_%d_%d' % (plane, real_level + 1, int(plane * tof_num))
                     self._add_neighbour(tof_name)
             else:

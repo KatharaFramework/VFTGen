@@ -23,7 +23,7 @@ class Tof(Node):
     #                          southbound_spines_connected_per_pod)
     #     self._assign_ipv4_address_to_interfaces()
 
-    def __init__(self, name, plane, aggregation_layer_level, tofs_for_plane, number_of_pods=0,
+    def __init__(self, name, plane, aggregation_layer_level, number_of_pods=0,
                  southbound_spines_connected_per_pod=0):
         """
         Initialize the tof object assigning name and populating its neighbours

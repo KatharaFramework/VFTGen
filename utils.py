@@ -40,15 +40,15 @@ def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol):
         'k_leaf': k_leaf,
         'k_top': k_top,
         'redundancy_factor': r,
-        'pod_num': int((k_leaf+k_top)/r),
+        'number_of_pods': int((k_leaf+k_top)/r),
         'pod': {
-            'spine_num': [k_leaf],
-            'leaf_num': k_top,
+            'spines_for_level': [k_leaf],
+            'leafs_for_pod': k_top,
             'servers_for_rack': servers_for_rack
         },
         'aggregation_layer': {
             'number_of_planes': int(k_leaf / r),
-            'tof_for_plane': k_top
+            'tofs_for_plane': k_top
         }
     }
     return config
