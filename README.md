@@ -29,6 +29,16 @@ The parameters to build a topology are in `config.json` file.
   "protocol": "bgp"
 }
 ```
+
+Alternatively, it is possible to pass them from command line using `--k_leaf`, `--k_top`, `--r`
+(__redundancy_factor__), `--servers` (__servers_for_rack__), `--protocol`.
+
+**N.B. :** It is needed to specify all these arguments if they are passed from command line.
+Otherwise the values are taken from `config.json` file.
+
+It is also possible to use `--d` param to specify an output directory. If not specified the current
+directory is used.  
+
 Parameters explanations: 
 
 - `k_leaf`: the number of ports of a leaf node pointing north or south
@@ -74,22 +84,26 @@ In order to run the tool, type on terminal:
 $ python3 main.py
 ```
 
-After that a `lab` directory, with all the configurations files for 
-Kathara, is created in the project folder. 
+**N.B. :** in this case the params values are taken from `config.json` file. 
 
-It also creates an `output` folder containing two files:
-- the `lab.json`: which contains all the information about
+After that is created in the project folder (or in the one specified with `--d` option) a
+`fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>` directory containing: 
+
+- a `lab` folder: containing all the configurations files for Kathara; 
+
+- a `lab.json` file: which contains all the information about
 the topology and the nodes;
-- the `topology_info.json`: which contains a schematic view of the built topology. 
 
-To run the lab, open a terminal in the root project folder and type: 
+- a `topology_info.json` file: which contains a schematic view of the built topology. 
+
+To run the lab, open a terminal in the `fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>` directory and type: 
 
 ```
 $ cd lab
 $ sudo kathara lstart --privileged 
 ```
 
-The `--privileged` flag is used to allow Kathará containers to use ECMP.
+The `--privileged` flag is used to allow Kathará containers to use ECMP (allowed only on Linux platform). 
 
 ## Connect to a device
 
@@ -117,14 +131,14 @@ position in the topology:
 - `server_<pod_number>_<server_number>`
 - `leaf_<pod_number>_<level>_<leaf_number>` (level is always 0 for a leaf)
 - `spine_<pod_number>_<level>_<spine_number>`
-- `tof_<level>_<tof_number>`
+- `tof_<plane>_<level>_<tof_number>`
 
 
 ## Topology information
 
 #### `topology_info.json`
 
-The `output\topology_info.json` file contains all the parameters of the built topology: 
+The `fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>\topology_info.json` file contains all the parameters of the built topology: 
 ```
 {
     "aggregation_layer": {
@@ -169,7 +183,7 @@ The other parameters have the same meaning explained in "Built a topology".
 
 #### `lab.json`
 
-It's possible to consult the `output/lab.json` file to know all the information on
+It's possible to consult the `fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>/lab.json` file to know all the information on
 topology and nodes. 
 
 #### `get_ip.py`
@@ -178,14 +192,14 @@ of the generated lab.
 
 To get all the IPs in the network type on terminal: 
 ```
-$ ./get_ip.py
+$ python3 get_ip.py --d fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>
 ```
 
 To get the IPs of a particular type of nodes type on terminal: 
 ```
-$ ./get_ip.py type
+$ python3 get_ip.py --d fat_tree_<k_leaf>_<k_top>_<r>_<prtocol> --type <node_type>
 ```
-Possible values for `type` param are: 
+Possible values for `<node_type>` param are: 
  - server
  - leaf
  - spine 

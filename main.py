@@ -2,29 +2,56 @@
 
 import os
 import shutil
+import argparse
 
 import utils
 from model.FatTree import FatTree
 from model.Laboratory import Laboratory
 
 if __name__ == '__main__':
-    if os.path.isdir('lab'):
-        shutil.rmtree('lab')
-    os.mkdir('lab')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--k_leaf', type=int, required=False)
+    parser.add_argument('--k_top', type=int, required=False)
+    parser.add_argument('--r', type=int, required=False)
+    parser.add_argument('--servers', type=int, required=False)
+    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
+    parser.add_argument('--d', type=str, required=False, default=os.path.abspath(''))
 
-    if not os.path.isdir('output'):
-        os.mkdir('output')
+    args = parser.parse_args()
 
-    topology_params = utils.read_config('config.json')
+    if args.k_leaf and args.k_top and args.r and args.servers and args.protocol:
+
+        topology_params = {
+            "k_leaf": args.k_leaf,
+            "k_top": args.k_top,
+            "redundancy_factor": args.r,
+            "servers_for_rack": args.servers,
+            "protocol": args.protocol
+        }
+    else:
+        topology_params = utils.read_config('config.json')
+
+    directory_name = 'fat_tree_%d_%d_%d_%s' % (topology_params["k_leaf"], topology_params["k_top"],
+                                                topology_params["redundancy_factor"], topology_params['protocol']
+                                                )
+
+    output_dir = '%s/%s' % (args.d, directory_name)
+
+    if os.path.isdir(output_dir):
+        shutil.rmtree(output_dir)
+
+    lab_dir = os.path.join(output_dir, 'lab')
+    os.makedirs(lab_dir)
+
     config = utils.three_level_fat_tree_config(
         topology_params["k_leaf"], topology_params["k_top"], topology_params["redundancy_factor"],
         topology_params["servers_for_rack"], topology_params['protocol']
     )
-    utils.write_json_file("output/topology_info.json", config)
+    utils.write_json_file(os.path.join(output_dir, "topology_info.json"), config)
     fat_tree = FatTree()
     fat_tree.create(config)
 
-    lab = Laboratory("lab")
+    lab = Laboratory(lab_dir)
     lab.dump(fat_tree)
 
     protocol = config["protocol"] if "protocol" in config else None
@@ -37,4 +64,4 @@ if __name__ == '__main__':
 
         protocol_configurator.configure(lab, fat_tree)
 
-    utils.write_json_file("output/lab.json", fat_tree.to_dict())
+    utils.write_json_file(os.path.join(output_dir, "lab.json"), fat_tree.to_dict())

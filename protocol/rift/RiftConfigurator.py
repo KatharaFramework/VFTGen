@@ -77,4 +77,5 @@ class RiftConfigurator(IConfigurator):
                         )
 
                 with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
+                    startup.write('sysctl -w net.ipv4.fib_multipath_hash_policy=1\n')
                     startup.write("python3 /rift/rift --ipv4-multicast-loopback-disable /etc/rift/config.yaml &\n")

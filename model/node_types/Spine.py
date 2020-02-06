@@ -15,7 +15,7 @@ class Spine(Node):
         :param connected_leafs: (int) the number of leaf southbound connected to this spine
         :param connected_spines: (int list) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
-        :param plane: (int, default=0) the number of planes in the fabric
+        :param plane: (int, default=0) the number of the plane which this spine is connected
         :param tofs_for_plane: (int, default=0) the number of tof for plane
         """
         super().__init__()
@@ -36,7 +36,7 @@ class Spine(Node):
         :param connected_leafs: (int, default=0) the number of leaf southbound connected to this spine
         :param connected_spines: (int list, default=[]) each element of the list in pos x represents the number of
                                  spine in x+1 pod level
-        :param number_of_planes: (int, default=0) the number of planes in the fabric
+        :param plane: (int, default=0) the number of the plane which this spine is connected
         :param tofs_for_plane: (int, default=0) the number of tof for plane
         :return: void
         """

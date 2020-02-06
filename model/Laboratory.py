@@ -3,10 +3,11 @@ import shutil
 
 from .node_types.Server import Server
 
-SHUTDOWN_SCRIPT_TEMPLATE = """while IFS= read -r line
-do
-  kill -9 "$line"
-done < "shared/%s/tcpdump.pid" """
+# SHUTDOWN_SCRIPT_TEMPLATE = """while IFS= read -r line
+# do
+#   kill -9 "$line"
+# done < "shared/%s/tcpdump.pid" """
+
 
 class Laboratory(object):
     """
@@ -16,11 +17,6 @@ class Laboratory(object):
 
     def __init__(self, dir_name):
         self.lab_dir_name = dir_name
-
-        if os.path.isdir(self.lab_dir_name):
-            shutil.rmtree(self.lab_dir_name)
-
-        os.mkdir(self.lab_dir_name)
 
     def dump(self, topology):
         """
@@ -57,7 +53,7 @@ class Laboratory(object):
             os.mkdir('%s/%s' % (self.lab_dir_name, node.name))
             os.mkdir('%s/%s/etc' % (self.lab_dir_name, node.name))
 
-        os.makedirs('%s/shared/%s' % (self.lab_dir_name, node.name), exist_ok=True)
+        # os.makedirs('%s/shared/%s' % (self.lab_dir_name, node.name), exist_ok=True)
         with open('%s/%s.startup' % (self.lab_dir_name, node.name), 'a') as startup:
             for interface in node.interfaces:
                 startup.write('ifconfig %s %s/%s up\n' % (interface.get_name(),
@@ -65,19 +61,19 @@ class Laboratory(object):
                                                           str(interface.network.prefixlen)
                                                           )
                               )
-            for interface in node.interfaces:
-                startup.write('tcpdump -U -enni %s -w /shared/%s/%s.pcap & echo $! >> shared/%s/tcpdump.pid\n' %
-                              (interface.get_name(), node.name, interface.get_name(), node.name))
+            # for interface in node.interfaces:
+            #     startup.write('tcpdump -U -enni %s -w /shared/%s/%s.pcap & echo $! >> shared/%s/tcpdump.pid\n' %
+            #                   (interface.get_name(), node.name, interface.get_name(), node.name))
 
             if type(node) == Server:
                 startup.write('route add default gw %s\n' % str(node.interfaces[0].neighbours[0][1]))
                 startup.write('/etc/init.d/apache2 start\n')
 
-        with open('%s/%s.shutdown' % (self.lab_dir_name, node.name), 'a') as shutdown:
-            shutdown.write("""while IFS= read -r line
-do
-  kill -2 "$line"
-done < "shared/%s/tcpdump.pid" """ % node.name)
-
+#         with open('%s/%s.shutdown' % (self.lab_dir_name, node.name), 'a') as shutdown:
+#             shutdown.write("""while IFS= read -r line
+# do
+#   kill -2 "$line"
+# done < "shared/%s/tcpdump.pid" """ % node.name)
+#
 
 

@@ -46,8 +46,9 @@ class OpenFabricConfigurator(IConfigurator):
                                         )
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
-            startup.write('/etc/init.d/frr start\n')
             startup.write('sysctl -w net.ipv4.fib_multipath_hash_policy=1\n')
+            startup.write('/etc/init.d/frr start\n')
+
 
     @staticmethod
     def _get_net_iso_format(node):
