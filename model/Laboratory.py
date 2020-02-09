@@ -55,7 +55,7 @@ class Laboratory(object):
 
         with open('%s/%s.startup' % (self.lab_dir_name, node.name), 'a') as startup:
             for interface in node.interfaces:
-                startup.write('ifconfig %s %s/%s up\n' % (interface.get_name(),
+                startup.write('ifconfig %s %s/%s up &&\n' % (interface.get_name(),
                                                           str(interface.ip_address),
                                                           str(interface.network.prefixlen)
                                                           )
