@@ -16,6 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('--servers', type=int, required=False)
     parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
     parser.add_argument('--d', type=str, required=False, default=os.path.abspath(''))
+    parser.add_argument('--name', type=str, required=False, default=None)
 
     args = parser.parse_args()
 
@@ -31,9 +32,12 @@ if __name__ == '__main__':
     else:
         topology_params = utils.read_config('config.json')
 
-    directory_name = 'fat_tree_%d_%d_%d_%s' % (topology_params["k_leaf"], topology_params["k_top"],
-                                                topology_params["redundancy_factor"], topology_params['protocol']
-                                                )
+    if args.name:
+        directory_name = args.name
+    else:
+        directory_name = 'fat_tree_%d_%d_%d_%s' % (topology_params["k_leaf"], topology_params["k_top"],
+                                                   topology_params["redundancy_factor"], topology_params['protocol']
+                                                   )
 
     output_dir = '%s/%s' % (args.d, directory_name)
 
