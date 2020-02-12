@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.k_leaf and args.k_top and args.r and args.servers and args.protocol:
+    if args.k_leaf and args.k_top and args.redundancy and args.servers and args.protocol:
         topology_params = {
             "k_leaf": args.k_leaf,
             "k_top": args.k_top,
