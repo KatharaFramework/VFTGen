@@ -12,11 +12,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--k_leaf', type=int, required=False)
     parser.add_argument('--k_top', type=int, required=False)
-    parser.add_argument('--r', type=int, required=False)
+    parser.add_argument('-r', '--redundancy', type=int, required=False)
     parser.add_argument('--servers', type=int, required=False)
     parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
-    parser.add_argument('--d', type=str, required=False, default=os.path.abspath(''))
-    parser.add_argument('--name', type=str, required=False, default=None)
+    parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath(''))
+    parser.add_argument('-n', '--name', type=str, required=False, default=None)
 
     args = parser.parse_args()
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         topology_params = {
             "k_leaf": args.k_leaf,
             "k_top": args.k_top,
-            "redundancy_factor": args.r,
+            "redundancy_factor": args.redundancy,
             "servers_for_rack": args.servers,
             "protocol": args.protocol
         }
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                                                    topology_params["redundancy_factor"], topology_params['protocol']
                                                    )
 
-    output_dir = '%s/%s' % (args.d, directory_name)
+    output_dir = '%s/%s' % (args.dir, directory_name)
 
     if os.path.isdir(output_dir):
         shutil.rmtree(output_dir)
