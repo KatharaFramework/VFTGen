@@ -14,11 +14,11 @@ enable password frr
 
 ROUTE_MAP = \
     """
-ip prefix-list DC_LOCAL_SUBNET 5 permit 10.0.0.0/8 le 26
-ip prefix-list DC_LOCAL_SUBNET 10 permit 200.0.0.0/8 le 32
+ip prefix-list DC_LOCAL_SUBNET seq 5 permit 10.0.0.0/8 le 32
+ip prefix-list DC_LOCAL_SUBNET seq 10 permit 200.0.0.0/8 le 24
 route-map ACCEPT_DC_LOCAL permit 10
- match ip-address DC_LOCAL_SUBNET
- """
+ match ip address DC_LOCAL_SUBNET
+"""
 
 BGPD_BASIC_CONFIG = \
     """
