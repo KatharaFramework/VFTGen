@@ -25,23 +25,19 @@ class FatTree(object):
         :param config: the conf read from "config.json"
         :return: void
         """
-        pod_levels = len(config['pod']['spine_num'])
-        aggregation_layer_levels = len(config['aggregation_layer']['tof_num'])
+        pod_levels = len(config['pod']['spines_for_level'])
 
-        for i in range(1, config['pod_num'] + 1):
+        for i in range(1, config['number_of_pods'] + 1):
             self._create_pod(i, config)
 
-        for level in range(pod_levels + 1, pod_levels + aggregation_layer_levels + 1):
-            tofs_for_level = config['aggregation_layer']['tof_num']
-            southbound_spines = config['pod']['spine_num'][pod_levels - 1]
+        aggregation_layer_level = pod_levels + 1
+        southbound_spines = config['redundancy_factor']
+        for plane in range(1, config['aggregation_layer']['number_of_planes'] + 1):
+            tofs_for_plane = config['aggregation_layer']['tofs_for_plane']
 
-            self._create_aggregation_layer_level(level,
-                                                 aggregation_layer_levels,
-                                                 tofs_for_level,
-                                                 pod_levels,
-                                                 config['pod_num'],
-                                                 southbound_spines
-                                                 )
+            self._create_aggregation_layer_plane(plane, tofs_for_plane, aggregation_layer_level,
+                                                 config['number_of_pods'],
+                                                 southbound_spines)
 
     def _create_pod(self, pod_number, config):
         """
@@ -54,22 +50,38 @@ class FatTree(object):
 
         self.pods[pod_number] = {}
 
-        for leaf_num in range(1, pod_info['leaf_num'] + 1):
-            self._create_rack(pod_number, leaf_num, pod_info['spine_num'][0], pod_info['servers_for_rack'])
+        for leaf_num in range(1, pod_info['leafs_for_pod'] + 1):
+            self._create_rack(pod_number, leaf_num, pod_info['spines_for_level'][0], pod_info['servers_for_rack'])
 
-        for level, spine_nums in enumerate(pod_info['spine_num']):
-            for spine_num in range(1, spine_nums + 1):
-                spine_name = 'spine_%d_%d_%d' % (pod_number, level+1, spine_num)
-
-                spine = Spine(spine_name,
-                              pod_number,
-                              level,
-                              len(pod_info['spine_num']),
-                              pod_info['leaf_num'],
-                              config['aggregation_layer']['tof_num'][0],
-                              pod_info['spine_num']
-                              )
-                self.pods[pod_number][spine_name] = spine
+        for level, spine_nums in enumerate(pod_info['spines_for_level']):
+            if level == len(pod_info['spines_for_level']) - 1:
+                spine_for_plane = int(spine_nums / config['aggregation_layer']['number_of_planes'])
+                for plane in range(1,config['aggregation_layer']['number_of_planes']+1):
+                    for spine_num in range(1, spine_for_plane + 1):
+                        spine_name = 'spine_%d_%d_%d' % (pod_number, level + 1,
+                                                         spine_num+int((spine_for_plane*(plane-1)))
+                                                         )
+                        spine = Spine(spine_name,
+                                      pod_number,
+                                      level,
+                                      len(pod_info['spines_for_level']),
+                                      pod_info['leafs_for_pod'],
+                                      pod_info['spines_for_level'],
+                                      plane=plane,
+                                      tofs_for_plane=config['aggregation_layer']['tofs_for_plane']
+                                      )
+                        self.pods[pod_number][spine_name] = spine
+            else:
+                for spine_num in range(1, spine_nums + 1):
+                    spine_name = 'spine_%d_%d_%d' % (pod_number, level + 1, spine_num)
+                    spine = Spine(spine_name,
+                                  pod_number,
+                                  level,
+                                  len(pod_info['spines_for_level']),
+                                  pod_info['leafs_for_pod'],
+                                  pod_info['spines_for_level'],
+                                  )
+                    self.pods[pod_number][spine_name] = spine
 
     def _create_rack(self, pod_number, leaf_number, connected_spines, connected_server):
         """
@@ -91,7 +103,7 @@ class FatTree(object):
             server = Server(server_name, leaf_name)
             self.pods[pod_number][server_name] = server
 
-    def _create_aggregation_layer_level(self, level, aggregation_layer_levels, tofs_for_level, pod_levels,
+    def _create_aggregation_layer_plane(self, plane, tofs_for_plane, aggregation_layer_level,
                                         number_of_pods,
                                         southbound_spines_connected):
         """
@@ -105,10 +117,11 @@ class FatTree(object):
         :param southbound_spines_connected: (int) number of spines southbound connected
         :return: void
         """
-        for tof_number in range(1, tofs_for_level[level - pod_levels - 1] + 1):
-            tof_name = 'tof_%d_%d' % (level, tof_number)
 
-            tof = Tof(tof_name, level, aggregation_layer_levels, tofs_for_level, pod_levels,
+        for tof_number in range(1, tofs_for_plane + 1):
+            tof_name = 'tof_%d_%d_%d' % (plane, aggregation_layer_level, tof_number)
+
+            tof = Tof(tof_name, plane, aggregation_layer_level,
                       number_of_pods=number_of_pods,
                       southbound_spines_connected_per_pod=southbound_spines_connected
                       )

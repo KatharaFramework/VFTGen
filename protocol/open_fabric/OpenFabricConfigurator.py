@@ -5,13 +5,13 @@ from ..IConfigurator import IConfigurator
 
 # --------------------------- Start of OpenFabric configuration templates ---------------------------------------------
 
-OPENFABRIC_IFACE_CONFIGURATION = """interface eth%d
- ip router openfabric 1
+OPENFABRIC_ROUTER_CONFIGURATION = """router openfabric %s
+ net %s
 """
 
-OPENFABRIC_ROUTER_CONFIGURATION = """
-router openfabric 1
- net %s
+OPENFABRIC_IFACE_CONFIGURATION = """
+interface %s
+ ip router openfabric %s
 """
 
 # --------------------------- End of OpenFabric configuration templates -----------------------------------------------
@@ -38,16 +38,19 @@ class OpenFabricConfigurator(IConfigurator):
             daemons.write('fabricd=yes\n')
 
         with open('%s/%s/etc/frr/fabricd.conf' % (lab.lab_dir_name, node.name), 'w') as fabricd_configuration:
-            for interface in node.interfaces:
-                fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % interface.number)
-
             fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION %
-                                        self._get_net_iso_format(node)
+                                        (node.name, self._get_net_iso_format(node))
                                         )
 
+            if 'leaf' in node.name:
+                fabricd_configuration.write("\nfabric-tier 0\n")
+
+            for interface in node.get_phy_interfaces():
+                fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % (interface.get_name(), node.name))
+
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
-            startup.write('/etc/init.d/frr start\n')
             startup.write('sysctl -w net.ipv4.fib_multipath_hash_policy=1\n')
+            startup.write('/etc/init.d/frr start\n')
 
     @staticmethod
     def _get_net_iso_format(node):

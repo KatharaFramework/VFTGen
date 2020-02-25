@@ -4,6 +4,7 @@ import shutil
 from .node_types.Server import Server
 
 
+
 class Laboratory(object):
     """
     This class is used to generate the kathara configuration from a topology object (FatTree)
@@ -12,11 +13,6 @@ class Laboratory(object):
 
     def __init__(self, dir_name):
         self.lab_dir_name = dir_name
-
-        if os.path.isdir(self.lab_dir_name):
-            shutil.rmtree(self.lab_dir_name)
-
-        os.mkdir(self.lab_dir_name)
 
     def dump(self, topology):
         """
