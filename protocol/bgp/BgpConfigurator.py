@@ -44,17 +44,20 @@ BGPD_ADDRESS_FAMILY = \
 {before}
 address-family ipv4 unicast
   {neighbours}
-  redistribute connected route-map ACCEPT_DC_LOCAL
+  {announced_networks}
   maximum-paths 64
 exit-address-family"""
 BGPD_LEAF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
-                                              neighbours="neighbor TOR activate"
+                                              neighbours="neighbor TOR activate",
+                                              announced_networks="__announced_networks__"
                                               )
 BGPD_SPINE_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
-                                               neighbours="neighbor fabric activate\n  neighbor TOR activate"
+                                               neighbours="neighbor fabric activate\n  neighbor TOR activate",
+                                               announced_networks=""
                                                )
 BGPD_TOF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
-                                             neighbours="neighbor fabric activate"
+                                             neighbours="neighbor fabric activate",
+                                             announced_networks=""
                                              )
 
 # ---------------------------  End of BGP configuration templates -----------------------------------------------
@@ -127,7 +130,12 @@ class BgpConfigurator(IConfigurator):
             if 'spine' in interface.neighbours[0][0]:
                 bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
 
-        bgpd_configuration.write(BGPD_LEAF_CONFIG)
+        server_interfaces = list(filter(lambda x: x.network.prefixlen == 24, node.get_phy_interfaces()))
+        server_networks = ["network %s" % iface.network for iface in server_interfaces]
+
+        bgpd_configuration.write(
+            BGPD_LEAF_CONFIG.replace('__announced_networks__', "\n  ".join(server_networks))
+        )
 
     @staticmethod
     def _write_bgp_spine_configuration(node, bgpd_configuration):
