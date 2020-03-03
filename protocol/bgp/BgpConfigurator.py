@@ -2,6 +2,7 @@ import os
 
 from protocol.bgp.ASManager import ASManager
 from ..IConfigurator import IConfigurator
+from ...model.node_types.Server import Server
 
 # --------------------------- Start of BGP configuration templates -----------------------------------------------
 
@@ -77,6 +78,8 @@ class BgpConfigurator(IConfigurator):
         """
         with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
             lab_config.write('%s[image]="kathara/frr"\n' % node.name)
+            if type(node) != Server:
+                lab_config.write('%s[sysctl]="net.ipv4.fib_multipath_hash_policy=1"\n' % node.name)
 
         os.mkdir('%s/%s/etc/frr' % (lab.lab_dir_name, node.name))
         with open('%s/%s/etc/frr/daemons' % (lab.lab_dir_name, node.name), 'w') as daemons:
@@ -96,7 +99,6 @@ class BgpConfigurator(IConfigurator):
             write_node_configuration(node, bgpd_configuration)
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
-            startup.write('sysctl -w net.ipv4.fib_multipath_hash_policy=1\n')
             startup.write('/etc/init.d/frr start\n')
 
 
