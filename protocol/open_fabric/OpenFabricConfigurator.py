@@ -1,8 +1,8 @@
 import os
 
+from model.node_types.Server import Server
 from .AreaManager import AreaManager
 from ..IConfigurator import IConfigurator
-from ...model.node_types.Server import Server
 
 # --------------------------- Start of OpenFabric configuration templates ---------------------------------------------
 
