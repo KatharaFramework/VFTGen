@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
+import argparse
 import os
 import shutil
-import argparse
 
 import utils
 from model.FatTree import FatTree
@@ -17,9 +17,10 @@ if __name__ == '__main__':
     parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
     parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath(''))
     parser.add_argument('-n', '--name', type=str, required=False, default=None)
+    parser.add_argument('--kube_net', action="store_true", required=False, default=False)
 
     args = parser.parse_args()
-
+    utils.KUBE_NET = args.kube_net
     if args.k_leaf and args.k_top and args.redundancy and args.servers and args.protocol:
         topology_params = {
             "k_leaf": args.k_leaf,

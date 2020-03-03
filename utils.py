@@ -1,6 +1,8 @@
 import importlib
 import json
 
+KUBE_NET = False
+
 
 def read_config(config):
     """

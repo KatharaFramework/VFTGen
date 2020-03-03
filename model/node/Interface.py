@@ -1,3 +1,6 @@
+import utils
+
+
 class Interface(object):
     __slots__ = ['number', 'collision_domain', 'network', 'ip_address', 'neighbours']
 
@@ -9,7 +12,7 @@ class Interface(object):
         self.neighbours = [(neighbour_name, neighbour_ip)]
 
     def get_name(self):
-        return "eth%d" % self.number
+        return ("net%d" if utils.KUBE_NET else "eth%d") % self.number
 
     def to_dict(self):
         return {
