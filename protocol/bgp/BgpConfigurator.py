@@ -38,7 +38,7 @@ neighbor {group} peer-group
  neighbor {group} timers connect 5
 """
 
-NEIGHBOR_PEER = """ neighbor eth%d interface peer-group %s\n"""
+NEIGHBOR_PEER = """ neighbor %s interface peer-group %s\n"""
 
 BGPD_ADDRESS_FAMILY = \
     """
@@ -130,7 +130,7 @@ class BgpConfigurator(IConfigurator):
 
         for interface in node.get_phy_interfaces():
             if 'spine' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
+                bgpd_configuration.write(NEIGHBOR_PEER % (interface.get_name(), "TOR"))
 
         server_interfaces = list(filter(lambda x: x.network.prefixlen == 24, node.get_phy_interfaces()))
         server_networks = ["network %s" % iface.network for iface in server_interfaces]
@@ -161,11 +161,11 @@ class BgpConfigurator(IConfigurator):
 
         for interface in node.get_phy_interfaces():
             if 'leaf' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "TOR"))
+                bgpd_configuration.write(NEIGHBOR_PEER % (interface.get_name(), "TOR"))
 
         for interface in node.get_phy_interfaces():
             if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
+                bgpd_configuration.write(NEIGHBOR_PEER % (interface.get_name(), "fabric"))
 
         bgpd_configuration.write(BGPD_SPINE_CONFIG)
 
@@ -188,6 +188,6 @@ class BgpConfigurator(IConfigurator):
 
         for interface in node.get_phy_interfaces():
             if 'spine' in interface.neighbours[0][0] or 'tof' in interface.neighbours[0][0]:
-                bgpd_configuration.write(NEIGHBOR_PEER % (interface.number, "fabric"))
+                bgpd_configuration.write(NEIGHBOR_PEER % (interface.get_name(), "fabric"))
 
         bgpd_configuration.write(BGPD_TOF_CONFIG)

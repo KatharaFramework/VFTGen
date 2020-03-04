@@ -18,7 +18,7 @@ shards:
 
 RIFT_CONFIG_INTERFACE_TEMPLATE = \
     """      
-         - name: eth%s"""
+         - name: %s"""
 
 RIFT_CONFIG_V4PREFIXES_LOOPBACK_TEMPLATE = \
     """     
@@ -63,7 +63,7 @@ class RiftConfigurator(IConfigurator):
                     rift_config.write(RIFT_CONFIG_TEMPLATE % (node.name, node_level))
 
                     for interface in node.get_phy_interfaces():
-                        rift_config.write(RIFT_CONFIG_INTERFACE_TEMPLATE % interface.number)
+                        rift_config.write(RIFT_CONFIG_INTERFACE_TEMPLATE % interface.get_name())
 
                     # Announce node loopback
                     loopback_interface = node.get_lo_interfaces().pop()
