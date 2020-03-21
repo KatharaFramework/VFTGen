@@ -20,12 +20,9 @@ RIFT_CONFIG_INTERFACE_TEMPLATE = \
     """      
          - name: %s"""
 
-RIFT_CONFIG_V4PREFIXES_LOOPBACK_TEMPLATE = \
-    """     
-        v4prefixes:
-          - address: %s
-            mask: 32
-            metric: 1"""
+RIFT_CONFIG_V4PREFIXES_TEMPLATE = \
+    """
+        v4prefixes:"""
 
 RIFT_CONFIG_V4PREFIXES_SERVER_TEMPLATE = \
     """     
@@ -65,12 +62,10 @@ class RiftConfigurator(IConfigurator):
                     for interface in node.get_phy_interfaces():
                         rift_config.write(RIFT_CONFIG_INTERFACE_TEMPLATE % interface.get_name())
 
-                    # Announce node loopback
-                    loopback_interface = node.get_lo_interfaces().pop()
-                    rift_config.write(RIFT_CONFIG_V4PREFIXES_LOOPBACK_TEMPLATE % str(loopback_interface.ip_address))
-
                     # Announce server IPs
                     if type(node) == Leaf:
+                        rift_config.write(RIFT_CONFIG_V4PREFIXES_TEMPLATE)
+
                         server_interface = list(filter(lambda eth: '/24' in str(eth.network), node.interfaces))
 
                         rift_config.write(
@@ -78,4 +73,5 @@ class RiftConfigurator(IConfigurator):
                         )
 
                 with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
-                    startup.write("python3 /rift/rift --ipv4-multicast-loopback-disable /etc/rift/config.yaml &\n")
+                    startup.write("python3 /rift/rift --ipv4-multicast-loopback-disable "
+                                  "--telnet-port-file /etc/rift/rift.port /etc/rift/config.yaml &\n")
