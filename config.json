@@ -1,7 +1,7 @@
 {
   "k_leaf": 4,
   "k_top": 4,
-  "redundancy_factor": 4,
+  "redundancy_factor": 1,
   "servers_for_rack": 1,
-  "protocol": "bgp"
+  "protocol": "rift"
 }

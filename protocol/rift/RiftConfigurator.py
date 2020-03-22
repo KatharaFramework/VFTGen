@@ -30,6 +30,7 @@ RIFT_CONFIG_V4PREFIXES_SERVER_TEMPLATE = \
             mask: 24
             metric: 1"""
 
+
 # --------------------------- End of Rift configuration templates ---------------------------------------------
 
 
@@ -39,6 +40,7 @@ class RiftConfigurator(IConfigurator):
     RIFT is implemented using rift-python (https://github.com/brunorijsman/rift-python) of Bruno Rijsman
     and deploying it in kathara containers
     """
+
     def _configure_node(self, lab, node):
         """
         Write the RIFT configuration for the node
@@ -55,7 +57,7 @@ class RiftConfigurator(IConfigurator):
 
                 with open('%s/%s/etc/rift/config.yaml' % (lab.lab_dir_name, node.name), 'w') as rift_config:
                     node_level = 'leaf' if type(node) == Leaf else 'top-of-fabric' if type(node) == Tof else \
-                                                                                      'undefined'
+                        'undefined'
 
                     rift_config.write(RIFT_CONFIG_TEMPLATE % (node.name, node_level))
 

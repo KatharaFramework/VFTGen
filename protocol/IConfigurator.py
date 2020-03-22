@@ -7,6 +7,7 @@ class IConfigurator(ABC):
     """
     Interface for Configurator objects
     """
+
     def configure(self, lab, topology):
         """
         write the protocol configurations for each node in topology

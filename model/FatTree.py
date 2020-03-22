@@ -8,9 +8,9 @@ class FatTree(object):
     """
     Represents a laboratory composed by two dict, one for the aggregation layer and the other for the pods
     """
-    __slots__ = ['pods', 'aggregation_layer']
+    __slots__ = ['pods', 'aggregation_layer', 'tof2tof']
 
-    def __init__(self):
+    def __init__(self, tof2tof=False):
         """
         Initialize the object.
         """
@@ -18,9 +18,11 @@ class FatTree(object):
 
         self.aggregation_layer = {}
 
+        self.tof2tof = tof2tof
+
     def create(self, config):
         """
-        Get the config of the lab (read from "config.json") and creates the corresponding lab inserting pods
+        Get the config of the lab (read from "config.json") and creates the corresponding topology inserting pods
         in self.pods and ToFs in self.aggregation_layer
         :param config: the conf read from "config.json"
         :return: void
@@ -37,7 +39,9 @@ class FatTree(object):
 
             self._create_aggregation_layer_plane(plane, tofs_for_plane, aggregation_layer_level,
                                                  config['number_of_pods'],
-                                                 southbound_spines)
+                                                 southbound_spines,
+                                                 config['aggregation_layer']['number_of_planes'],
+                                                 )
 
     def _create_pod(self, pod_number, config):
         """
@@ -56,10 +60,10 @@ class FatTree(object):
         for level, spine_nums in enumerate(pod_info['spines_for_level']):
             if level == len(pod_info['spines_for_level']) - 1:
                 spine_for_plane = int(spine_nums / config['aggregation_layer']['number_of_planes'])
-                for plane in range(1,config['aggregation_layer']['number_of_planes']+1):
+                for plane in range(1, config['aggregation_layer']['number_of_planes'] + 1):
                     for spine_num in range(1, spine_for_plane + 1):
                         spine_name = 'spine_%d_%d_%d' % (pod_number, level + 1,
-                                                         spine_num+int((spine_for_plane*(plane-1)))
+                                                         spine_num + int((spine_for_plane * (plane - 1)))
                                                          )
                         spine = Spine(spine_name,
                                       pod_number,
@@ -104,8 +108,8 @@ class FatTree(object):
             self.pods[pod_number][server_name] = server
 
     def _create_aggregation_layer_plane(self, plane, tofs_for_plane, aggregation_layer_level,
-                                        number_of_pods,
-                                        southbound_spines_connected):
+                                        number_of_pods, southbound_spines_connected,
+                                        number_of_plane):
         """
         Creates an aggregation layer level and inserts all the nodes of it in self.aggregation_layer
         :param level: (int) the level of layer to be created
@@ -119,13 +123,13 @@ class FatTree(object):
         """
 
         for tof_number in range(1, tofs_for_plane + 1):
-            tof_name = 'tof_%d_%d_%d' % (plane, aggregation_layer_level, tof_number)
-
-            tof = Tof(tof_name, plane, aggregation_layer_level,
+            tof = Tof(tof_number, plane, aggregation_layer_level,
                       number_of_pods=number_of_pods,
-                      southbound_spines_connected_per_pod=southbound_spines_connected
+                      southbound_spines_connected_per_pod=southbound_spines_connected,
+                      number_of_planes=number_of_plane,
+                      tof2tof=self.tof2tof
                       )
-            self.aggregation_layer[tof_name] = tof
+            self.aggregation_layer[tof.name] = tof
 
     def to_dict(self):
         """

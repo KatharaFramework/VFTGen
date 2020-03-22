@@ -53,13 +53,17 @@ if __name__ == '__main__':
         topology_params["servers_for_rack"], topology_params['protocol']
     )
     utils.write_json_file(os.path.join(output_dir, "topology_info.json"), config)
-    fat_tree = FatTree()
+
+    protocol = config["protocol"] if "protocol" in config else None
+    number_of_planes = int(topology_params["k_leaf"] / topology_params["redundancy_factor"])
+    tof2tof = True if protocol == 'rift' and number_of_planes > 1 else False
+
+    fat_tree = FatTree(tof2tof)
     fat_tree.create(config)
 
     lab = Laboratory(lab_dir)
     lab.dump(fat_tree)
 
-    protocol = config["protocol"] if "protocol" in config else None
     if protocol:
         protocol_class_name = "".join(map(lambda x: x.capitalize(), protocol.split("_")))
 

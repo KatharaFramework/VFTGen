@@ -61,6 +61,7 @@ BGPD_TOF_CONFIG = BGPD_ADDRESS_FAMILY.format(before="",
                                              announced_networks=""
                                              )
 
+
 # ---------------------------  End of BGP configuration templates -----------------------------------------------
 
 
@@ -100,7 +101,6 @@ class BgpConfigurator(IConfigurator):
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
             startup.write('/etc/init.d/frr start\n')
-
 
     @staticmethod
     def _write_route_map(bgpd_configuration):

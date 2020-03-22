@@ -1,8 +1,6 @@
 import os
-import shutil
 
 from .node_types.Server import Server
-
 
 
 class Laboratory(object):
@@ -52,9 +50,9 @@ class Laboratory(object):
         with open('%s/%s.startup' % (self.lab_dir_name, node.name), 'a') as startup:
             for interface in node.interfaces:
                 startup.write('ifconfig %s %s/%s up &&\n' % (interface.get_name(),
-                                                          str(interface.ip_address),
-                                                          str(interface.network.prefixlen)
-                                                          )
+                                                             str(interface.ip_address),
+                                                             str(interface.network.prefixlen)
+                                                             )
                               )
 
             if type(node) == Server:

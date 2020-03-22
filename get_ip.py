@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-import json
-import sys
 import argparse
+import json
 import os
 
 if __name__ == '__main__':

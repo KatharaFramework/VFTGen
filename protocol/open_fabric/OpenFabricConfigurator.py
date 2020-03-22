@@ -15,6 +15,7 @@ interface %s
  ip router openfabric %s
 """
 
+
 # --------------------------- End of OpenFabric configuration templates -----------------------------------------------
 
 
@@ -65,4 +66,3 @@ class OpenFabricConfigurator(IConfigurator):
         area = AreaManager.get_instance().get_net_number(node)
 
         return '%s.%s.%s.%s.00' % (area, s[0:4], s[4:8], s[8:12])
-

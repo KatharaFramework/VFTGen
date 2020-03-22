@@ -1,5 +1,5 @@
-from ..node.Node import Node
 from networking.CollisionDomain import CollisionDomain
+from ..node.Node import Node
 
 
 class Spine(Node):
@@ -40,7 +40,7 @@ class Spine(Node):
         :param tofs_for_plane: (int, default=0) the number of tof for plane
         :return: void
         """
-        real_level = level+1
+        real_level = level + 1
         if real_level == 1:
             # If it is the first level of spine then connect this spine to all southbound leafs in this pod
             # Connects this spine to any leaf at level 0 in this pod
