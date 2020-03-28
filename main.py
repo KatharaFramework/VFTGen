@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath(''))
     parser.add_argument('-n', '--name', type=str, required=False, default=None)
     parser.add_argument('--kube_net', action="store_true", required=False, default=False)
+    parser.add_argument('--tof_rings', action="store_true", required=False, default=False)
 
     args = parser.parse_args()
     utils.KUBE_NET = args.kube_net
@@ -56,9 +57,11 @@ if __name__ == '__main__':
 
     protocol = config["protocol"] if "protocol" in config else None
     number_of_planes = int(topology_params["k_leaf"] / topology_params["redundancy_factor"])
-    tof2tof = True if protocol == 'rift' and number_of_planes > 1 else False
 
-    fat_tree = FatTree(tof2tof)
+    if args.tof_rings and number_of_planes == 1:
+        raise Exception('It is not possible to add ToF rings in a single plane topology!')
+
+    fat_tree = FatTree(args.tof_rings)
     fat_tree.create(config)
 
     lab = Laboratory(lab_dir)

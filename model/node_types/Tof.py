@@ -61,7 +61,7 @@ class Tof(Node):
 
     def _add_tof2tof_links(self):
         """
-            Add tof to tof (east-west) links
+            Add tof to tof (east-west) links as described in the RIFT draft
         """
         tof_next_name = None
         if self.plane == 1:
