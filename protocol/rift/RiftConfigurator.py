@@ -75,5 +75,5 @@ class RiftConfigurator(IConfigurator):
                         )
 
                 with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
-                    startup.write("python3 /rift/rift --ipv4-multicast-loopback-disable "
-                                  "--telnet-port-file /etc/rift/rift.port /etc/rift/config.yaml &\n")
+                    startup.write("screen -dmS rift python3 /rift/rift --ipv4-multicast-loopback-disable "
+                                  "--telnet-port-file /etc/rift/rift.port /etc/rift/config.yaml\n")
