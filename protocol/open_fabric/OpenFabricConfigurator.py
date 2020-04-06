@@ -23,7 +23,6 @@ class OpenFabricConfigurator(IConfigurator):
     """
     This class is used to write the OpenFabric configuration of nodes in a FatTree object
     """
-
     def _configure_node(self, lab, node):
         """
         Write the OpenFabric configuration for the node

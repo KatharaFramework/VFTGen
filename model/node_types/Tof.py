@@ -14,14 +14,17 @@ class Tof(Node):
         :param number_of_pods: (int, default=0) total number of pods
         :param southbound_spines_connected_per_pod: (int, default=0) number of spines connected southbound per pod
         :param number_of_planes: (int, default=1) the total number of planes in the topology
-        :param tof2tof: (bool) if true add tof to tof links else None
+        :param tof2tof: (bool, default=False) if true add tof to tof links else None
         """
         super().__init__()
         self.role = 'tof'
-        self.name = 'tof_%d_%d_%d' % (plane, aggregation_layer_level, number)
+
         self.level = aggregation_layer_level
         self.plane = plane
         self.number = number
+
+        self.name = 'tof_%d_%d_%d' % (self.plane, self.level, self.number)
+
         self.number_of_planes = number_of_planes
 
         self._add_neighbours(aggregation_layer_level, number_of_pods,

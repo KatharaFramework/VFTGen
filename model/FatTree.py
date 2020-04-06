@@ -62,30 +62,26 @@ class FatTree(object):
                 spine_for_plane = int(spine_nums / config['aggregation_layer']['number_of_planes'])
                 for plane in range(1, config['aggregation_layer']['number_of_planes'] + 1):
                     for spine_num in range(1, spine_for_plane + 1):
-                        spine_name = 'spine_%d_%d_%d' % (pod_number, level + 1,
-                                                         spine_num + int((spine_for_plane * (plane - 1)))
-                                                         )
-                        spine = Spine(spine_name,
+                        spine = Spine(spine_num + int((spine_for_plane * (plane - 1))),
                                       pod_number,
-                                      level,
+                                      level + 1,
                                       len(pod_info['spines_for_level']),
                                       pod_info['leafs_for_pod'],
                                       pod_info['spines_for_level'],
                                       plane=plane,
                                       tofs_for_plane=config['aggregation_layer']['tofs_for_plane']
                                       )
-                        self.pods[pod_number][spine_name] = spine
+                        self.pods[pod_number][spine.name] = spine
             else:
                 for spine_num in range(1, spine_nums + 1):
-                    spine_name = 'spine_%d_%d_%d' % (pod_number, level + 1, spine_num)
-                    spine = Spine(spine_name,
+                    spine = Spine(spine_num,
                                   pod_number,
-                                  level,
+                                  level + 1,
                                   len(pod_info['spines_for_level']),
                                   pod_info['leafs_for_pod'],
                                   pod_info['spines_for_level'],
                                   )
-                    self.pods[pod_number][spine_name] = spine
+                    self.pods[pod_number][spine.name] = spine
 
     def _create_rack(self, pod_number, leaf_number, connected_spines, connected_server):
         """
@@ -96,29 +92,26 @@ class FatTree(object):
         :param connected_server: number of servers connected (southbound) to the leaf a the top of this rack
         :return: void
          """
-        leaf_name = 'leaf_%d_0_%d' % (pod_number, leaf_number)
-
-        leaf = Leaf(leaf_name, pod_number, leaf_number, connected_spines, connected_server)
-        self.pods[pod_number][leaf_name] = leaf
+        leaf = Leaf(pod_number, leaf_number, connected_spines, connected_server)
+        self.pods[pod_number][leaf.name] = leaf
 
         for server_num in range(1, connected_server + 1):
             server_name = 'server_%d_%d_%d' % (pod_number, leaf_number, server_num)
 
-            server = Server(server_name, leaf_name)
+            server = Server(server_name, leaf.name)
             self.pods[pod_number][server_name] = server
 
     def _create_aggregation_layer_plane(self, plane, tofs_for_plane, aggregation_layer_level,
                                         number_of_pods, southbound_spines_connected,
-                                        number_of_plane):
+                                        number_of_planes):
         """
         Creates an aggregation layer level and inserts all the nodes of it in self.aggregation_layer
-        :param level: (int) the level of layer to be created
-        :param aggregation_layer_levels: (int) the total number of level of the aggregation layer
-        :param tofs_for_level: (list) each element of the list at pos x represents the number of tofs at layer level
-                                x + 1
-        :param pod_levels: (int) total number of level in a pod
+        :param plane: (int) the plane number of ToFs to be created
+        :param tofs_for_plane: (int) number of ToFs to create for this plane
+        :param aggregation_layer_level: (int) the level of this layer in the network
         :param number_of_pods: (int) total number of pods
         :param southbound_spines_connected: (int) number of spines southbound connected
+        :param number_of_planes: (int) total number of planes
         :return: void
         """
 
@@ -126,7 +119,7 @@ class FatTree(object):
             tof = Tof(tof_number, plane, aggregation_layer_level,
                       number_of_pods=number_of_pods,
                       southbound_spines_connected_per_pod=southbound_spines_connected,
-                      number_of_planes=number_of_plane,
+                      number_of_planes=number_of_planes,
                       tof2tof=self.tof2tof
                       )
             self.aggregation_layer[tof.name] = tof

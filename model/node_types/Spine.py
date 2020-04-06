@@ -3,12 +3,11 @@ from ..node.Node import Node
 
 
 class Spine(Node):
-    def __init__(self, name, pod_number, level, pod_total_levels, connected_leafs, connected_spines,
-                 plane=0,
+    def __init__(self, number, pod_number, level, pod_total_levels, connected_leafs, connected_spines, plane=0,
                  tofs_for_plane=0):
         """
         Initialize the spine object assigning name and populating its neighbours
-        :param name: (string) the name of the spine node
+        :param number: (int) the number of the tof in this pod
         :param pod_number: (int) the number of the pod of this spine
         :param level: (int) the level of this spine
         :param pod_total_levels: (int) the total level of the pods
@@ -20,18 +19,19 @@ class Spine(Node):
         """
         super().__init__()
         self.role = 'spine'
-        self.name = name
-        self.level = level + 1
+
+        self.level = level
         self.pod_number = pod_number
-        self._add_neighbours(level, pod_total_levels, connected_leafs, connected_spines, plane,
-                             tofs_for_plane)
+        self.number = number
+
+        self.name = 'spine_%d_%d_%d' % (self.pod_number, self.level, self.number)
+
+        self._add_neighbours(pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane)
         self._assign_ipv4_address_to_interfaces()
 
-    def _add_neighbours(self, level, pod_total_levels, connected_leafs, connected_spines, plane,
-                        tofs_for_plane):
+    def _add_neighbours(self, pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane):
         """
         Adds all the neighbours of this spine in self.neighbours as (neighbour_name, collision_domain)
-        :param level: (int) the level of this spine
         :param pod_total_levels: (int) the total level of the pods
         :param connected_leafs: (int, default=0) the number of leaf southbound connected to this spine
         :param connected_spines: (int list, default=[]) each element of the list in pos x represents the number of
@@ -40,8 +40,7 @@ class Spine(Node):
         :param tofs_for_plane: (int, default=0) the number of tof for plane
         :return: void
         """
-        real_level = level + 1
-        if real_level == 1:
+        if self.level == 1:
             # If it is the first level of spine then connect this spine to all southbound leafs in this pod
             # Connects this spine to any leaf at level 0 in this pod
             for leaf_num in range(1, connected_leafs + 1):
@@ -52,34 +51,34 @@ class Spine(Node):
             if pod_total_levels == 1:
                 # If it is the last level of spines then connect this spine to northbound tofs in the aggregation layer
                 for tof_num in range(1, tofs_for_plane + 1):
-                    tof_name = 'tof_%d_%d_%d' % (plane, real_level + 1, tof_num)
+                    tof_name = 'tof_%d_%d_%d' % (plane, self.level + 1, tof_num)
                     self._add_neighbour(tof_name)
             else:
                 # If it is not the last level of the pod then connects this spine to northbound spines of
                 # level above of this pod
                 for spine_num in range(1, connected_spines[1] + 1):
-                    spine_name = 'spine_%d_%d_%d' % (self.pod_number, real_level + 1, spine_num)
+                    spine_name = 'spine_%d_%d_%d' % (self.pod_number, self.level + 1, spine_num)
 
                     self._add_neighbour(spine_name)
         else:
             # If it is not the first level of spine
             # Connects southbound to this spine all the spine of the previous level of this pod
-            for spine_num in range(1, connected_spines[level - 1] + 1):
-                southern_spine_name = 'spine_%d_%d_%d' % (self.pod_number, real_level - 1, spine_num)
+            for spine_num in range(1, connected_spines[self.level - 2] + 1):
+                southern_spine_name = 'spine_%d_%d_%d' % (self.pod_number, self.level - 1, spine_num)
 
                 self._add_neighbour(southern_spine_name)
 
-            if real_level == pod_total_levels:
+            if self.level == pod_total_levels:
                 # If it is the last level of the pod then connects northbound all the tof in the first level of the
                 # aggregation layer
                 for tof_num in range(1, tofs_for_plane + 1):
-                    tof_name = 'tof_%d_%d_%d' % (plane, real_level + 1, int(plane * tof_num))
+                    tof_name = 'tof_%d_%d_%d' % (plane, self.level + 1, int(plane * tof_num))
                     self._add_neighbour(tof_name)
             else:
                 # If it is not the last level of spine then connects northbound this spine to all the spine of the
                 # above level of this pod
-                for spine_num in range(1, connected_spines[level + 1]):
-                    northern_spine_name = 'spine_%d_%d_%d' % (self.pod_number, real_level + 1, spine_num)
+                for spine_num in range(1, connected_spines[self.level]):
+                    northern_spine_name = 'spine_%d_%d_%d' % (self.pod_number, self.level + 1, spine_num)
 
                     self._add_neighbour(northern_spine_name)
 
