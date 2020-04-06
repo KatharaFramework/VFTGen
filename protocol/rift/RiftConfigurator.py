@@ -50,7 +50,7 @@ class RiftConfigurator(IConfigurator):
         """
         if type(node) != Server:
             with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
-                lab_config.write('%s[image]="kathara/rift-python"\n' % node.name)
+                lab_config.write('%s[image]="kathara/rift"\n' % node.name)
                 lab_config.write('%s[sysctl]="net.ipv4.fib_multipath_hash_policy=1"\n' % node.name)
 
                 os.mkdir('%s/%s/etc/rift' % (lab.lab_dir_name, node.name))
