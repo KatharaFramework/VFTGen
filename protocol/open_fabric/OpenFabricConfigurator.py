@@ -3,10 +3,18 @@ import os
 from model.node_types.Leaf import Leaf
 from model.node_types.Server import Server
 from model.node_types.Spine import Spine
+from model.node_types.Tof import Tof
 from .AreaManager import AreaManager
 from ..IConfigurator import IConfigurator
 
 # --------------------------- Start of OpenFabric configuration templates ---------------------------------------------
+
+ZEBRA_CONFIG = \
+    """
+hostname frr
+password frr
+enable password frr
+"""
 
 OPENFABRIC_ROUTER_CONFIGURATION = """router openfabric %s
  net %s
@@ -25,6 +33,7 @@ class OpenFabricConfigurator(IConfigurator):
     """
     This class is used to write the OpenFabric configuration of nodes in a FatTree object
     """
+
     def _configure_node(self, lab, node):
         """
         Write the OpenFabric configuration for the node
@@ -42,27 +51,32 @@ class OpenFabricConfigurator(IConfigurator):
             daemons.write('zebra=yes\n')
             daemons.write('fabricd=yes\n')
 
+        with open('%s/%s/etc/frr/zebra.conf' % (lab.lab_dir_name, node.name), 'w') as zebra_configuration:
+            zebra_configuration.write(ZEBRA_CONFIG)
+
         with open('%s/%s/etc/frr/fabricd.conf' % (lab.lab_dir_name, node.name), 'w') as fabricd_configuration:
             fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION %
                                         (node.name, self._get_net_iso_format(node))
                                         )
 
-            fabricd_configuration.write("max-lsp-lifetime 65535\n")
-            fabricd_configuration.write("lsp-refresh-interval 65000\n")
-            fabricd_configuration.write("spf-interval 5\n")
+            fabricd_configuration.write(" lsp-gen-interval 5\n")
+            fabricd_configuration.write(" max-lsp-lifetime 65535\n")
+            fabricd_configuration.write(" lsp-refresh-interval 65000\n")
+            fabricd_configuration.write(" spf-interval 5\n")
 
-            if type(node) == Leaf:
-                fabricd_configuration.write("\nfabric-tier 0\n")
-
-            if type(node) == Leaf or type(node) == Spine:
-                fabricd_configuration.write("\nset-overload-bit\n")
+            tier_n = 0
+            if type(node) == Spine:
+                tier_n = 1
+            elif type(node) == Tof:
+                tier_n = 2
+            fabricd_configuration.write(" fabric-tier %d\n" % tier_n)
 
             for interface in node.get_phy_interfaces():
+                fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % (interface.get_name(), node.name))
+
                 if type(node) == Leaf:
                     if 'server' in interface.neighbours[0][0]:
-                        continue
-
-                fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % (interface.get_name(), node.name))
+                        fabricd_configuration.write(" openfabric passive 5\n")
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
             startup.write('/etc/init.d/frr start\n')
