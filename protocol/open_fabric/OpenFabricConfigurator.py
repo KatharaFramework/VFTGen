@@ -93,7 +93,7 @@ class OpenFabricConfigurator(IConfigurator):
         :return: (string) a net identifier in iso format
         """
         s = "".join(map(lambda x: '%03d' % int(x), str(node.interfaces[0].ip_address).split('.')))
-        area = AreaManager.get_instance().get_net_number(node)
+        # area = AreaManager.get_instance().get_net_number(node)
+        area = "49.0000"
 
         return '%s.%s.%s.%s.00' % (area, s[0:4], s[4:8], s[8:12])
-        # return "49.0000.0000.0001.00"
