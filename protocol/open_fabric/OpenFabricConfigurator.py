@@ -69,14 +69,18 @@ class OpenFabricConfigurator(IConfigurator):
                 tier_n = 1
             elif type(node) == Tof:
                 tier_n = 2
+
             fabricd_configuration.write(" fabric-tier %d\n" % tier_n)
+
+            if type(node) == Leaf:
+                fabricd_configuration.write(" set-overload-bit\n")
 
             for interface in node.get_phy_interfaces():
                 fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % (interface.get_name(), node.name))
 
                 if type(node) == Leaf:
                     if 'server' in interface.neighbours[0][0]:
-                        fabricd_configuration.write(" openfabric passive 5\n")
+                        fabricd_configuration.write(" openfabric passive\n")
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
             startup.write('/etc/init.d/frr start\n')
@@ -92,3 +96,4 @@ class OpenFabricConfigurator(IConfigurator):
         area = AreaManager.get_instance().get_net_number(node)
 
         return '%s.%s.%s.%s.00' % (area, s[0:4], s[4:8], s[8:12])
+        # return "49.0000.0000.0001.00"
