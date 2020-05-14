@@ -1,6 +1,8 @@
 import os
 
+from model.node_types.Leaf import Leaf
 from model.node_types.Server import Server
+from model.node_types.Spine import Spine
 from .AreaManager import AreaManager
 from ..IConfigurator import IConfigurator
 
@@ -45,10 +47,21 @@ class OpenFabricConfigurator(IConfigurator):
                                         (node.name, self._get_net_iso_format(node))
                                         )
 
-            if 'leaf' in node.name:
+            fabricd_configuration.write("max-lsp-lifetime 65535\n")
+            fabricd_configuration.write("lsp-refresh-interval 65000\n")
+            fabricd_configuration.write("spf-interval 5\n")
+
+            if type(node) == Leaf:
                 fabricd_configuration.write("\nfabric-tier 0\n")
 
+            if type(node) == Leaf or type(node) == Spine:
+                fabricd_configuration.write("\nset-overload-bit\n")
+
             for interface in node.get_phy_interfaces():
+                if type(node) == Leaf:
+                    if 'server' in interface.neighbours[0][0]:
+                        continue
+
                 fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % (interface.get_name(), node.name))
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:

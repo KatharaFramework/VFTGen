@@ -1,7 +1,6 @@
 import os
 
 from model.node_types.Leaf import Leaf
-from model.node_types.Server import Server
 from model.node_types.Tof import Tof
 from ..IConfigurator import IConfigurator
 
