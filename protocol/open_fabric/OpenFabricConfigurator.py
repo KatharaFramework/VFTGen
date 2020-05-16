@@ -4,7 +4,6 @@ from model.node_types.Leaf import Leaf
 from model.node_types.Server import Server
 from model.node_types.Spine import Spine
 from model.node_types.Tof import Tof
-from .AreaManager import AreaManager
 from ..IConfigurator import IConfigurator
 
 # --------------------------- Start of OpenFabric configuration templates ---------------------------------------------
@@ -18,6 +17,11 @@ enable password frr
 
 OPENFABRIC_ROUTER_CONFIGURATION = """router openfabric %s
  net %s
+ fabric-tier %d
+ max-lsp-lifetime 65535
+ lsp-refresh-interval 65000
+ lsp-gen-interval 1
+ spf-interval 1
 """
 
 OPENFABRIC_IFACE_CONFIGURATION = """
@@ -55,22 +59,15 @@ class OpenFabricConfigurator(IConfigurator):
             zebra_configuration.write(ZEBRA_CONFIG)
 
         with open('%s/%s/etc/frr/fabricd.conf' % (lab.lab_dir_name, node.name), 'w') as fabricd_configuration:
-            fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION %
-                                        (node.name, self._get_net_iso_format(node))
-                                        )
-
-            fabricd_configuration.write(" lsp-gen-interval 5\n")
-            fabricd_configuration.write(" max-lsp-lifetime 65535\n")
-            fabricd_configuration.write(" lsp-refresh-interval 65000\n")
-            fabricd_configuration.write(" spf-interval 5\n")
-
             tier_n = 0
             if type(node) == Spine:
                 tier_n = 1
             elif type(node) == Tof:
                 tier_n = 2
 
-            fabricd_configuration.write(" fabric-tier %d\n" % tier_n)
+            fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION %
+                                        (node.name, self._get_net_iso_format(node), tier_n)
+                                        )
 
             if type(node) == Leaf:
                 fabricd_configuration.write(" set-overload-bit\n")
@@ -92,8 +89,7 @@ class OpenFabricConfigurator(IConfigurator):
         :param node: (Node) the node for which you want the net id in iso format
         :return: (string) a net identifier in iso format
         """
-        s = "".join(map(lambda x: '%03d' % int(x), str(node.interfaces[0].ip_address).split('.')))
-        # area = AreaManager.get_instance().get_net_number(node)
         area = "49.0000"
+        s = "".join(map(lambda x: '%03d' % int(x), str(node.interfaces[0].ip_address).split('.')))
 
         return '%s.%s.%s.%s.00' % (area, s[0:4], s[4:8], s[8:12])

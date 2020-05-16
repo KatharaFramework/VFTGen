@@ -28,6 +28,7 @@ class IPAM(object):
             self.ipv4_subnets = BASE_IPV4_NET.subnets(new_prefix=30)
             self.ipv4_server_subnets = BASE_IPV4_SERVER_NET.subnets(new_prefix=24)
             self.ipv4_loopback_ips = BASE_IPV4_LOOPBACK_NET.hosts()
+            next(self.ipv4_loopback_ips)  # Remove 127.0.0.1 which is reserved
 
             self.ipv4_assignments = {}
             self.ipv4_server_assignments = {}
@@ -120,10 +121,10 @@ class IPAM(object):
 
                 return new_assignment
 
-    def get_ipv4_loopback_address(self, node_name):
+    def get_ipv4_loopback_address(self):
         loopback_address = next(self.ipv4_loopback_ips)
 
         return {
-            "subnet": BASE_IPV4_LOOPBACK_NET,
+            "subnet": ipaddress.ip_network(str(loopback_address) + "/32"),
             "ip": loopback_address
         }

@@ -73,5 +73,5 @@ class Leaf(Node):
                                        )
 
         # Assign the loopback address
-        loopback_assignment = IPAM.get_instance().get_ipv4_loopback_address(self.name)
+        loopback_assignment = IPAM.get_instance().get_ipv4_loopback_address()
         self.interfaces.append(LoopbackInterface(0, loopback_assignment['subnet'], loopback_assignment["ip"]))
