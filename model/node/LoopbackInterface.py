@@ -7,7 +7,7 @@ class LoopbackInterface(object):
         self.ip_address = ip_address
 
     def get_name(self):
-        return "lo%d" % self.number if self.number > 0 else "lo"
+        return "lo:%d" % self.number if self.number > 0 else "lo"
 
     def to_dict(self):
         return {
