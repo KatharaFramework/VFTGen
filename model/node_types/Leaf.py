@@ -41,11 +41,16 @@ class Leaf(Node):
             self.neighbours.append((spine_name, collision_domain))
 
         # Adding servers
-        for i in range(1, connected_server + 1):
-            server_name = "server_%d_%d_%d" % (self.pod_number, self.number, i)
+        if connected_server == 0:
+            server_name = "server_%d_%d_%d" % (self.pod_number, self.number, 1)
             collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, server_name)
-
             self.neighbours.append((server_name, collision_domain))
+        else:
+            for i in range(1, connected_server + 1):
+                server_name = "server_%d_%d_%d" % (self.pod_number, self.number, i)
+                collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, server_name)
+
+                self.neighbours.append((server_name, collision_domain))
 
     def _assign_ipv4_address_to_interfaces(self):
         for neighbour_name, collision_domain in self.neighbours:
