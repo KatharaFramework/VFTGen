@@ -8,9 +8,9 @@ class FatTree(object):
     """
     Represents a laboratory composed by two dict, one for the aggregation layer and the other for the pods
     """
-    __slots__ = ['pods', 'aggregation_layer', 'tof2tof']
+    __slots__ = ['pods', 'aggregation_layer']
 
-    def __init__(self, tof2tof=False):
+    def __init__(self):
         """
         Initialize the object.
         """
@@ -18,13 +18,11 @@ class FatTree(object):
 
         self.aggregation_layer = {}
 
-        self.tof2tof = tof2tof
-
     def create(self, config):
         """
-        Get the config of the lab (read from "config.json") and creates the corresponding topology inserting pods
+        Get the config of the lab and creates the corresponding topology inserting pods
         in self.pods and ToFs in self.aggregation_layer
-        :param config: the conf read from "config.json"
+        :param config: the configuration of the topology
         :return: void
         """
         pod_levels = len(config['pod']['spines_for_level'])
@@ -42,13 +40,14 @@ class FatTree(object):
                                                  southbound_spines,
                                                  config['spine_tof_parallel_links'],
                                                  config['aggregation_layer']['number_of_planes'],
+                                                 config['tof_rings'],
                                                  config['ring_parallel_links'])
 
     def _create_pod(self, pod_number, config):
         """
         Creates a pod and insert it in self.pods
         :param pod_number: (int) the number of the pod to create
-        :param config: (dict) the config info of the lab
+        :param config: (dict) the config info of the topology
         :return: void
         """
         pod_info = config['pod']
@@ -70,11 +69,10 @@ class FatTree(object):
                                       len(pod_info['spines_for_level']),
                                       pod_info['leafs_for_pod'],
                                       pod_info['spines_for_level'],
-                                      leaf_spine_parallel_links=config['leaf_spine_parallel_links'],
-                                      spine_tof_parallel_links=config['spine_tof_parallel_links'],
-                                      plane=plane,
-                                      tofs_for_plane=config['aggregation_layer']['tofs_for_plane']
-                                      )
+                                      config['leaf_spine_parallel_links'],
+                                      config['spine_tof_parallel_links'],
+                                      plane,
+                                      config['aggregation_layer']['tofs_for_plane'])
                         self.pods[pod_number][spine.name] = spine
             else:
                 for spine_num in range(1, spine_nums + 1):
@@ -84,9 +82,8 @@ class FatTree(object):
                                   len(pod_info['spines_for_level']),
                                   pod_info['leafs_for_pod'],
                                   pod_info['spines_for_level'],
-                                  leaf_spine_parallel_links=config['leaf_spine_parallel_links'],
-                                  spine_tof_parallel_links=config['spine_tof_parallel_links'],
-                                  )
+                                  config['leaf_spine_parallel_links'],
+                                  config['spine_tof_parallel_links'])
                     self.pods[pod_number][spine.name] = spine
 
     def _create_rack(self, pod_number, leaf_number, connected_spines, connected_server, leaf_spine_parallel_links):
@@ -94,12 +91,12 @@ class FatTree(object):
         Considering leaf as ToR creates a leaf and the servers connected
         :param pod_number: (int) the number of the pod of the rack
         :param leaf_number: (int) the number of the leaf at the top of this rack
-        :param connected_spines: number of spines connected (northbound) to the leaf at the top of this rack
-        :param connected_server: number of servers connected (southbound) to the leaf a the top of this rack
+        :param connected_spines (int): number of spines connected (northbound) to the leaf at the top of this rack
+        :param connected_server (int): number of servers connected (southbound) to the leaf a the top of this rack
+        :param leaf_spine_parallel_links (int): number of links between a Leaf and a Spine
         :return: void
          """
-        leaf = Leaf(pod_number, leaf_number, connected_spines, connected_server,
-                    leaf_spine_parallel_links=leaf_spine_parallel_links)
+        leaf = Leaf(pod_number, leaf_number, connected_spines, connected_server, leaf_spine_parallel_links)
         self.pods[pod_number][leaf.name] = leaf
 
         for server_num in range(1, connected_server + 1):
@@ -110,7 +107,7 @@ class FatTree(object):
 
     def _create_aggregation_layer_plane(self, plane, tofs_for_plane, aggregation_layer_level,
                                         number_of_pods, southbound_spines_connected, spine_tof_parallel_links,
-                                        number_of_planes, ring_parallel_links):
+                                        number_of_planes, tof_rings, ring_parallel_links):
         """
         Creates an aggregation layer level and inserts all the nodes of it in self.aggregation_layer
         :param plane: (int) the plane number of ToFs to be created
@@ -118,7 +115,10 @@ class FatTree(object):
         :param aggregation_layer_level: (int) the level of this layer in the network
         :param number_of_pods: (int) total number of pods
         :param southbound_spines_connected: (int) number of spines southbound connected
-        :param number_of_planes: (int) total number of planes
+        :param spine_tof_parallel_links (int): number of links between the ToF and southbound Spines
+        :param number_of_planes: (int) total number of planes,
+        :param tof_rings (bool): indicates whether ToF rings should be created
+        :param ring_parallel_links (int): number of links between ToFs connected with a ring (if present)
         :return: void
         """
 
@@ -128,7 +128,7 @@ class FatTree(object):
                       southbound_spines_connected_per_pod=southbound_spines_connected,
                       number_of_planes=number_of_planes,
                       spine_tof_parallel_links=spine_tof_parallel_links,
-                      tof2tof=self.tof2tof,
+                      tof2tof=tof_rings,
                       ring_parallel_links=ring_parallel_links
                       )
             self.aggregation_layer[tof.name] = tof

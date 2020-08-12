@@ -2,7 +2,6 @@ from ..node.Node import Node
 
 
 class Tof(Node):
-
     def __init__(self, number, plane, aggregation_layer_level, number_of_pods=0, southbound_spines_connected_per_pod=0,
                  number_of_planes=1, spine_tof_parallel_links=1, tof2tof=False, ring_parallel_links=1):
         """
@@ -14,6 +13,7 @@ class Tof(Node):
         :param southbound_spines_connected_per_pod: (int, default=0) number of spines connected southbound per pod
         :param number_of_planes: (int, default=1) the total number of planes in the topology
         :param tof2tof: (bool, default=False) if true add tof to tof links else None
+        :param ring_parallel_links (int): number of links between this ToFs and its ring neighbours (if present)
         """
         super().__init__()
         self.role = 'tof'
@@ -39,6 +39,8 @@ class Tof(Node):
         :param aggregation_layer_level: (int) the level of the tof in the aggregation layer
         :param number_of_pods: (int, default=0) total number of pods
         :param southbound_spines_connected_per_pod: (int, default=0) number of spines connected southbound per pod
+        :param tof2tof: (bool, default=False) if true add tof to tof links else None
+        :param ring_parallel_links (int): number of links between this ToFs and its ring neighbours (if present)
         """
         for pod_number in range(1, number_of_pods + 1):
             for spine_number in range(1, southbound_spines_connected_per_pod + 1):
@@ -54,7 +56,8 @@ class Tof(Node):
 
     def _add_tof2tof_links(self, ring_parallel_links):
         """
-            Add tof to tof (east-west) links as described in the RIFT draft
+        Add tof to tof (east-west) links as described in the RIFT draft
+        :param ring_parallel_links (int): number of links between this ToFs and its ring neighbour
         """
         tof_next_name = None
         if self.plane == 1:

@@ -26,26 +26,24 @@ def class_for_name(module_name, class_name):
     return getattr(m, class_name)
 
 
-def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol,
+def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol, tof_rings,
                                 leaf_spine_parallel_links=1, spine_tof_parallel_links=1, ring_parallel_links=1):
-    # config = {
-    #     'k_leaf': k_leaf,
-    #     'k_top': k_top,
-    #     'redundancy_factor': r,
-    #     'number_of_planes': k_leaf / r,
-    #     'number_of_pod': (k_leaf+k_top)/r,
-    #     'number_of_leaf_per_pod': k_top,
-    #     'number_of_top_per_pod': k_leaf,
-    #     'number_of_tof': k_top*(k_leaf/r),
-    # }
+    # Formulas used:
+    #   Number of Planes: k_leaf / r
+    #   Number of PoDs: (k_leaf + k_top) / r
+    #   Number of Leaf per PoD: k_top
+    #   Number of ToP per PoD: k_leaf
+    #   Number of ToFs: k_top * (k_leaf / r)
+
     config = {
         'protocol': protocol,
         'k_leaf': k_leaf,
         'k_top': k_top,
+        'redundancy_factor': r,
+        'tof_rings': tof_rings,
         'leaf_spine_parallel_links': leaf_spine_parallel_links,
         'spine_tof_parallel_links': spine_tof_parallel_links,
         'ring_parallel_links': ring_parallel_links,
-        'redundancy_factor': r,
         'number_of_pods': int((k_leaf + k_top) / r),
         'pod': {
             'spines_for_level': [k_leaf],

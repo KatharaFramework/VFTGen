@@ -13,6 +13,7 @@ class Leaf(Node):
         :param leaf_number: (int) the number of this leaf in its pod
         :param connected_spine: (int) the number spines connected northbound to this leaf
         :param connected_server: (int) the number of servers connected southbound to this leaf
+        :param leaf_spine_parallel_links (int): number of links between this Leaf and its Spines
         """
         super().__init__()
         self.role = 'leaf'
@@ -31,6 +32,7 @@ class Leaf(Node):
         Add neighbours to self.neighbours
         :param connected_spine: (int) the number spines connected northbound to this leaf
         :param connected_server: (int) the number of servers connected southbound to this leaf
+        :param leaf_spine_parallel_links (int): number of links between this Leaf and its Spines
         :return:
         """
         # Adding spines
@@ -52,8 +54,7 @@ class Leaf(Node):
 
     def _assign_ipv4_address_to_interfaces(self):
         for neighbour_name, collision_domain in self.neighbours:
-            assignment = IPAM.get_instance().get_ipv4_address_pair(collision_domain, self.name,
-                                                                   neighbour_name)
+            assignment = IPAM.get_instance().get_ipv4_address_pair(collision_domain, self.name, neighbour_name)
             # if server_interface is empty the node is not a server or the servers interface is not initialized
             server_interface = list(filter(lambda interface: interface.network == assignment['subnet'],
                                            self.interfaces

@@ -11,8 +11,9 @@ class Spine(Node):
         :param level: (int) the level of this spine
         :param pod_total_levels: (int) the total level of the pods
         :param connected_leafs: (int) the number of leaf southbound connected to this spine
-        :param connected_spines: (int list) each element of the list in pos x represents the number of
-                                 spine in x+1 pod level
+        :param connected_spines: (int) number of spines connected northbound
+        :param leaf_spine_parallel_links (int): number of links between this Spine and its Leaves
+        :param spine_tof_parallel_links (int): number of links between this Spine and its ToFs
         :param plane: (int, default=0) the number of the plane which this spine is connected
         :param tofs_for_plane: (int, default=0) the number of tof for plane
         """
@@ -25,18 +26,19 @@ class Spine(Node):
 
         self.name = 'spine_%d_%d_%d' % (self.pod_number, self.level, self.number)
 
-        self._add_neighbours(pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane,
-                             leaf_spine_parallel_links, spine_tof_parallel_links)
+        self._add_neighbours(pod_total_levels, connected_leafs, connected_spines, leaf_spine_parallel_links,
+                             spine_tof_parallel_links, plane, tofs_for_plane)
         self._assign_ipv4_address_to_interfaces()
 
-    def _add_neighbours(self, pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane,
-                        leaf_spine_parallel_links, spine_tof_parallel_links):
+    def _add_neighbours(self, pod_total_levels, connected_leafs, connected_spines, leaf_spine_parallel_links,
+                        spine_tof_parallel_links, plane, tofs_for_plane):
         """
         Adds all the neighbours of this spine in self.neighbours as (neighbour_name, collision_domain)
         :param pod_total_levels: (int) the total level of the pods
         :param connected_leafs: (int, default=0) the number of leaf southbound connected to this spine
-        :param connected_spines: (int list, default=[]) each element of the list in pos x represents the number of
-                                 spine in x+1 pod level
+        :param connected_spines: (int) number of spines connected northbound
+        :param leaf_spine_parallel_links (int): number of links between this Spine and its Leaves
+        :param spine_tof_parallel_links (int): number of links between this Spine and its ToFs
         :param plane: (int, default=0) the number of the plane which this spine is connected
         :param tofs_for_plane: (int, default=0) the number of tof for plane
         :return: void

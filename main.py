@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--redundancy', type=int, required=False)
     parser.add_argument('--servers', type=int, required=False)
     parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
-    parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath(''))
+    parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath('.'))
     parser.add_argument('-n', '--name', type=str, required=False, default=None)
     parser.add_argument('--kube_net', action="store_true", required=False, default=False)
     parser.add_argument('--tof_rings', action="store_true", required=False, default=False)
@@ -31,6 +31,7 @@ if __name__ == '__main__':
             "k_top": args.k_top,
             "redundancy_factor": args.redundancy,
             "servers_for_rack": args.servers,
+            "tof_rings": args.tof_rings,
             "leaf_spine_parallel_links": args.ls_parallel if args.ls_parallel else 1,
             "spine_tof_parallel_links": args.st_parallel if args.st_parallel else 1,
             "ring_parallel_links": args.ring_parallel if args.ring_parallel else 1,
@@ -47,7 +48,7 @@ if __name__ == '__main__':
                                                    topology_params["redundancy_factor"], topology_params['protocol']
                                                    )
 
-    output_dir = '%s/%s' % (args.dir, directory_name)
+    output_dir = os.path.join(args.dir, directory_name)
 
     if os.path.isdir(output_dir):
         shutil.rmtree(output_dir)
@@ -57,10 +58,9 @@ if __name__ == '__main__':
 
     config = utils.three_level_fat_tree_config(
         topology_params["k_leaf"], topology_params["k_top"], topology_params["redundancy_factor"],
-        topology_params["servers_for_rack"], topology_params['protocol'],
-        leaf_spine_parallel_links=topology_params['leaf_spine_parallel_links'],
-        spine_tof_parallel_links=topology_params["spine_tof_parallel_links"],
-        ring_parallel_links=topology_params["ring_parallel_links"]
+        topology_params["servers_for_rack"], topology_params['protocol'], topology_params['tof_rings'],
+        topology_params['leaf_spine_parallel_links'], topology_params["spine_tof_parallel_links"],
+        topology_params["ring_parallel_links"]
     )
     utils.write_json_file(os.path.join(output_dir, "topology_info.json"), config)
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if args.tof_rings and number_of_planes == 1:
         raise Exception('It is not possible to add ToF rings in a single plane topology!')
 
-    fat_tree = FatTree(args.tof_rings)
+    fat_tree = FatTree()
     fat_tree.create(config)
 
     lab = Laboratory(lab_dir)

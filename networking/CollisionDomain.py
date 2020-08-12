@@ -27,7 +27,7 @@ class CollisionDomain(object):
         :param second_node: (string) a name of a node
         :param link_id: (int) the id of the link, unique among the links between first_node and second_node
         :return: a four ASCII char collision domain "XXXX" ("XXXX" is a new one if it is the first time that the
-                 function sees the couple (node_name1, node_name2))
+                 function sees the tuple (node_name1, node_name2, link_id))
         """
         if 'leaf' in first_node and 'server' in second_node or 'leaf' in second_node and 'server' in first_node:
             leaf_node = first_node if 'leaf' in first_node else second_node
@@ -67,7 +67,6 @@ class CollisionDomain(object):
     @staticmethod
     def _get_next_char(first_char, second_char, inc_second=False):
         """
-
         :param first_char: the char that you want increment
         :param second_char: the char after the one you want increment
         :param inc_second: a bool used to increment the second_char in case of overflow

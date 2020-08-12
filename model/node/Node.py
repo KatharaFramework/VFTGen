@@ -52,10 +52,10 @@ class Node(object):
         Selects a collision domain and adds a neighbour
         (represented by (node_name, collision_domain)) to self.neighbours
         :param node_name: the name of the neighbour to add
+        :param link_id: (int) the id of the link, unique among the links between first_node and second_node
         :return:
         """
         collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, node_name, link_id)
-        # print('Add parallel link %s from %s to %s on cd %s' % (link_id, self.name, node_name, collision_domain))
         self.neighbours.append((node_name, collision_domain))
 
     def to_dict(self):
