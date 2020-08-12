@@ -20,29 +20,30 @@ class CollisionDomain(object):
 
             CollisionDomain.__instance = self
 
-    def get_collision_domain(self, first_node, second_node):
+    def get_collision_domain(self, first_node, second_node, link_id=0):
         """
         Takes two nodes names and returns a collision domain (a new one if it has not yet been set)
         :param first_node: (string) a name of a node
         :param second_node: (string) a name of a node
-        :return: a four ASCII char collision domain "XXXX" ("XXXX" is a new one if it is the first time that the function
-                 sees the couple (node_name1, node_name2))
+        :param link_id: (int) the id of the link, unique among the links between first_node and second_node
+        :return: a four ASCII char collision domain "XXXX" ("XXXX" is a new one if it is the first time that the
+                 function sees the couple (node_name1, node_name2))
         """
         if 'leaf' in first_node and 'server' in second_node or 'leaf' in second_node and 'server' in first_node:
             leaf_node = first_node if 'leaf' in first_node else second_node
-            if (leaf_node, 'servers') in self.collision_domain_assignments:
-                return self.collision_domain_assignments[(leaf_node, 'servers')]
+            if (leaf_node, 'servers', link_id) in self.collision_domain_assignments:
+                return self.collision_domain_assignments[(leaf_node, 'servers', link_id)]
             else:
                 collision_domain = self._get_new_collision_domain()
-                self.collision_domain_assignments[(leaf_node, 'servers')] = collision_domain
+                self.collision_domain_assignments[(leaf_node, 'servers', link_id)] = collision_domain
                 return collision_domain
-        elif (first_node, second_node) in self.collision_domain_assignments:
-            return self.collision_domain_assignments[(first_node, second_node)]
-        elif (second_node, first_node) in self.collision_domain_assignments:
-            return self.collision_domain_assignments[(second_node, first_node)]
+        elif (first_node, second_node, link_id) in self.collision_domain_assignments:
+            return self.collision_domain_assignments[(first_node, second_node, link_id)]
+        elif (second_node, first_node, link_id) in self.collision_domain_assignments:
+            return self.collision_domain_assignments[(second_node, first_node, link_id)]
         else:
             collision_domain = self._get_new_collision_domain()
-            self.collision_domain_assignments[(first_node, second_node)] = collision_domain
+            self.collision_domain_assignments[(first_node, second_node, link_id)] = collision_domain
 
             return collision_domain
 

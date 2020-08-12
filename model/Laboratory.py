@@ -34,7 +34,9 @@ class Laboratory(object):
         :return:
         """
         with open('%s/lab.conf' % self.lab_dir_name, 'a') as lab_config:
+            # print("Node %s links: %d" % (node.name, len(node.get_phy_interfaces())))
             for interface in node.get_phy_interfaces():
+
                 lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
 
     def write_startup(self, node):

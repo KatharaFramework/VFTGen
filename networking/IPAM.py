@@ -102,10 +102,10 @@ class IPAM(object):
         if 'server' in first_node or 'server' in second_node:
             return self.get_ipv4_server_address_pair(collision_domain, first_node, second_node)
         else:
-            if (first_node, second_node) in self.ipv4_assignments:
-                return self.ipv4_assignments[(first_node, second_node)]
-            elif (second_node, first_node) in self.ipv4_assignments:
-                return self.ipv4_assignments[(second_node, first_node)]
+            if (first_node, second_node, collision_domain) in self.ipv4_assignments:
+                return self.ipv4_assignments[(first_node, second_node, collision_domain)]
+            elif (second_node, first_node, collision_domain) in self.ipv4_assignments:
+                return self.ipv4_assignments[(second_node, first_node, collision_domain)]
             else:
                 subnet = next(self.ipv4_subnets)
                 ips = subnet.hosts()
@@ -117,7 +117,7 @@ class IPAM(object):
                     second_node: next(ips)
                 }
 
-                self.ipv4_assignments[(first_node, second_node)] = new_assignment
+                self.ipv4_assignments[(first_node, second_node, collision_domain)] = new_assignment
 
                 return new_assignment
 

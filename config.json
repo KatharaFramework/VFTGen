@@ -3,5 +3,8 @@
   "k_top": 2,
   "redundancy_factor": 1,
   "servers_for_rack": 1,
+  "leaf_spine_parallel_links": 2,
+  "spine_tof_parallel_links": 2,
+  "ring_parallel_links": 2,
   "protocol": "rift"
 }

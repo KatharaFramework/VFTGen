@@ -1,3 +1,4 @@
+from networking.CollisionDomain import CollisionDomain
 from networking.IPAM import IPAM
 from .Interface import Interface
 from .LoopbackInterface import LoopbackInterface
@@ -41,6 +42,21 @@ class Node(object):
 
     def get_phy_interfaces(self):
         return sorted(list(set(self.interfaces) - set(self.get_lo_interfaces())), key=lambda x: x.number)
+
+    def _add_parallel_links_to_neighbour(self, node_name, parallel_links):
+        for link_id in range(0, parallel_links):
+            self._add_neighbour(node_name, link_id=link_id)
+
+    def _add_neighbour(self, node_name, link_id=0):
+        """
+        Selects a collision domain and adds a neighbour
+        (represented by (node_name, collision_domain)) to self.neighbours
+        :param node_name: the name of the neighbour to add
+        :return:
+        """
+        collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, node_name, link_id)
+        # print('Add parallel link %s from %s to %s on cd %s' % (link_id, self.name, node_name, collision_domain))
+        self.neighbours.append((node_name, collision_domain))
 
     def to_dict(self):
         return {

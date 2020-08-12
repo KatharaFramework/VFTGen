@@ -1,11 +1,10 @@
-from networking.CollisionDomain import CollisionDomain
 from ..node.Node import Node
 
 
 class Tof(Node):
 
-    def __init__(self, number, plane, aggregation_layer_level, number_of_pods=0,
-                 southbound_spines_connected_per_pod=0, number_of_planes=1, tof2tof=False):
+    def __init__(self, number, plane, aggregation_layer_level, number_of_pods=0, southbound_spines_connected_per_pod=0,
+                 number_of_planes=1, spine_tof_parallel_links=1, tof2tof=False, ring_parallel_links=1):
         """
         Initialize the tof object assigning name and populating its neighbours
         :param number: (int) the number of the tof in this level and in this plane
@@ -28,12 +27,13 @@ class Tof(Node):
         self.number_of_planes = number_of_planes
 
         self._add_neighbours(aggregation_layer_level, number_of_pods,
-                             southbound_spines_connected_per_pod, tof2tof)
+                             southbound_spines_connected_per_pod, spine_tof_parallel_links,
+                             tof2tof, ring_parallel_links)
 
         self._assign_ipv4_address_to_interfaces()
 
     def _add_neighbours(self, aggregation_layer_level, number_of_pods,
-                        southbound_spines_connected_per_pod, tof2tof):
+                        southbound_spines_connected_per_pod, spine_tof_parallel_links, tof2tof, ring_parallel_links):
         """
         Add all neighbours to the tof
         :param aggregation_layer_level: (int) the level of the tof in the aggregation layer
@@ -47,22 +47,12 @@ class Tof(Node):
                                                                           (self.plane - 1)
                                                                           )
                                                           )
-                self._add_neighbour(southern_spine_name)
+                self._add_parallel_links_to_neighbour(southern_spine_name, spine_tof_parallel_links)
 
         if tof2tof:
-            self._add_tof2tof_links()
+            self._add_tof2tof_links(ring_parallel_links)
 
-    def _add_neighbour(self, node_name):
-        """
-            Selects a collision domain and adds a neighbour
-            (represented by (node_name, collision_domain)) to self.neighbours
-            :param node_name: the name of the neighbour to add
-            :return:
-        """
-        collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, node_name)
-        self.neighbours.append((node_name, collision_domain))
-
-    def _add_tof2tof_links(self):
+    def _add_tof2tof_links(self, ring_parallel_links):
         """
             Add tof to tof (east-west) links as described in the RIFT draft
         """
@@ -79,6 +69,6 @@ class Tof(Node):
             tof_prev_name = 'tof_%d_%d_%d' % (self.plane - 1, self.level, self.number)
             tof_next_name = 'tof_%d_%d_%d' % (self.plane + 1, self.level, self.number)
 
-        self._add_neighbour(tof_prev_name)
+        self._add_parallel_links_to_neighbour(tof_prev_name, ring_parallel_links)
         if tof_next_name:
-            self._add_neighbour(tof_next_name)
+            self._add_parallel_links_to_neighbour(tof_next_name, ring_parallel_links)

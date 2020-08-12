@@ -26,7 +26,8 @@ def class_for_name(module_name, class_name):
     return getattr(m, class_name)
 
 
-def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol):
+def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol,
+                                leaf_spine_parallel_links=1, spine_tof_parallel_links=1, ring_parallel_links=1):
     # config = {
     #     'k_leaf': k_leaf,
     #     'k_top': k_top,
@@ -41,6 +42,9 @@ def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol):
         'protocol': protocol,
         'k_leaf': k_leaf,
         'k_top': k_top,
+        'leaf_spine_parallel_links': leaf_spine_parallel_links,
+        'spine_tof_parallel_links': spine_tof_parallel_links,
+        'ring_parallel_links': ring_parallel_links,
         'redundancy_factor': r,
         'number_of_pods': int((k_leaf + k_top) / r),
         'pod': {

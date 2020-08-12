@@ -1,10 +1,9 @@
-from networking.CollisionDomain import CollisionDomain
 from ..node.Node import Node
 
 
 class Spine(Node):
-    def __init__(self, number, pod_number, level, pod_total_levels, connected_leafs, connected_spines, plane=0,
-                 tofs_for_plane=0):
+    def __init__(self, number, pod_number, level, pod_total_levels, connected_leafs, connected_spines,
+                 leaf_spine_parallel_links=1, spine_tof_parallel_links=1, plane=0, tofs_for_plane=0):
         """
         Initialize the spine object assigning name and populating its neighbours
         :param number: (int) the number of the tof in this pod
@@ -26,10 +25,12 @@ class Spine(Node):
 
         self.name = 'spine_%d_%d_%d' % (self.pod_number, self.level, self.number)
 
-        self._add_neighbours(pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane)
+        self._add_neighbours(pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane,
+                             leaf_spine_parallel_links, spine_tof_parallel_links)
         self._assign_ipv4_address_to_interfaces()
 
-    def _add_neighbours(self, pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane):
+    def _add_neighbours(self, pod_total_levels, connected_leafs, connected_spines, plane, tofs_for_plane,
+                        leaf_spine_parallel_links, spine_tof_parallel_links):
         """
         Adds all the neighbours of this spine in self.neighbours as (neighbour_name, collision_domain)
         :param pod_total_levels: (int) the total level of the pods
@@ -45,27 +46,24 @@ class Spine(Node):
             # Connects this spine to any leaf at level 0 in this pod
             for leaf_num in range(1, connected_leafs + 1):
                 leaf_name = 'leaf_%d_0_%d' % (self.pod_number, leaf_num)
-
-                self._add_neighbour(leaf_name)
+                self._add_parallel_links_to_neighbour(leaf_name, leaf_spine_parallel_links)
 
             if pod_total_levels == 1:
                 # If it is the last level of spines then connect this spine to northbound tofs in the aggregation layer
                 for tof_num in range(1, tofs_for_plane + 1):
                     tof_name = 'tof_%d_%d_%d' % (plane, self.level + 1, tof_num)
-                    self._add_neighbour(tof_name)
+                    self._add_parallel_links_to_neighbour(tof_name, spine_tof_parallel_links)
             else:
                 # If it is not the last level of the pod then connects this spine to northbound spines of
                 # level above of this pod
                 for spine_num in range(1, connected_spines[1] + 1):
                     spine_name = 'spine_%d_%d_%d' % (self.pod_number, self.level + 1, spine_num)
-
                     self._add_neighbour(spine_name)
         else:
             # If it is not the first level of spine
             # Connects southbound to this spine all the spine of the previous level of this pod
             for spine_num in range(1, connected_spines[self.level - 2] + 1):
                 southern_spine_name = 'spine_%d_%d_%d' % (self.pod_number, self.level - 1, spine_num)
-
                 self._add_neighbour(southern_spine_name)
 
             if self.level == pod_total_levels:
@@ -73,21 +71,10 @@ class Spine(Node):
                 # aggregation layer
                 for tof_num in range(1, tofs_for_plane + 1):
                     tof_name = 'tof_%d_%d_%d' % (plane, self.level + 1, int(plane * tof_num))
-                    self._add_neighbour(tof_name)
+                    self._add_parallel_links_to_neighbour(tof_name, spine_tof_parallel_links)
             else:
                 # If it is not the last level of spine then connects northbound this spine to all the spine of the
                 # above level of this pod
                 for spine_num in range(1, connected_spines[self.level]):
                     northern_spine_name = 'spine_%d_%d_%d' % (self.pod_number, self.level + 1, spine_num)
-
                     self._add_neighbour(northern_spine_name)
-
-    def _add_neighbour(self, node_name):
-        """
-        Selects a collision domain and adds a neighbour
-        (represented by (node_name, collision_domain)) to self.neighbours
-        :param node_name: the name of the neighbour to add
-        :return:
-        """
-        collision_domain = CollisionDomain.get_instance().get_collision_domain(self.name, node_name)
-        self.neighbours.append((node_name, collision_domain))
