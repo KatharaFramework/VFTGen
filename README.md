@@ -57,11 +57,11 @@ Parameters explanations:
   
 - `pods`: used to specify the number of pods in the fabric (if not specified the maximum number of pods is used)
 
-- `leaf_spine_parallel_links`: used to specify the number of parallel links between a leaf and a spine
+- `leaf_spine_parallel_links`: used to specify the number of parallel links between a leaf and a spine (default=1)
 
-- `spine_tof_parallel_links`: used to specify the number of parallel links between a spine and a tof
+- `spine_tof_parallel_links`: used to specify the number of parallel links between a spine and a tof (default=1)
 
-- `ring_parallel_links`: used to specify the number of parallel links between two tofs connected between tof rings
+- `ring_parallel_links`: used to specify the number of parallel links between two tofs connected between tof rings (default=1)
 
 - `protocol`: 
     - `bgp` (uses the FRR implementation)
