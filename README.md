@@ -113,10 +113,8 @@ To run the lab, open a terminal in the `fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>`
 
 ```
 $ cd lab
-$ sudo kathara lstart --privileged 
-```
-
-The `--privileged` flag is used to allow Kathará containers to use ECMP (allowed only on Linux platform). 
+$ kathara lstart
+``` 
 
 ## Connect to a device
 
