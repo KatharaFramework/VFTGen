@@ -26,6 +26,11 @@ The parameters to build a topology are in `config.json` file.
   "k_top": 4,
   "redundancy_factor": 2,
   "servers_for_rack": 1,
+  "pods" : 2,
+  "leaf_spine_parallel_links": 1, 
+  "spine_tof_parallel_links": 1, 
+  "ring_parallel_links": 1,
+  
   "protocol": "bgp"
 }
 ```
@@ -49,6 +54,14 @@ Parameters explanations:
 
 - `servers_for_rack`: used to specify the number of servers for each leaf 
   (considered as Top of Rack)
+  
+- `pods`: used to specify the number of pods in the fabric (if not specified the maximum number of pods is used)
+
+- `leaf_spine_parallel_links`: used to specify the number of parallel links between a leaf and a spine
+
+- `spine_tof_parallel_links`: used to specify the number of parallel links between a spine and a tof
+
+- `ring_parallel_links`: used to specify the number of parallel links between two tofs connected between tof rings
 
 - `protocol`: 
     - `bgp` (uses the FRR implementation)
