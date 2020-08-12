@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--k_leaf', type=int, required=False)
     parser.add_argument('--k_top', type=int, required=False)
     parser.add_argument('-r', '--redundancy', type=int, required=False)
+    parser.add_argument('--pods', type=int, required=False)
     parser.add_argument('--servers', type=int, required=False)
     parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
     parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath('.'))
@@ -30,6 +31,7 @@ if __name__ == '__main__':
             "k_leaf": args.k_leaf,
             "k_top": args.k_top,
             "redundancy_factor": args.redundancy,
+            "n_pods": args.pods if args.pods else None,
             "servers_for_rack": args.servers,
             "tof_rings": args.tof_rings,
             "leaf_spine_parallel_links": args.ls_parallel if args.ls_parallel else 1,
@@ -58,9 +60,9 @@ if __name__ == '__main__':
 
     config = utils.three_level_fat_tree_config(
         topology_params["k_leaf"], topology_params["k_top"], topology_params["redundancy_factor"],
-        topology_params["servers_for_rack"], topology_params['protocol'], topology_params['tof_rings'],
-        topology_params['leaf_spine_parallel_links'], topology_params["spine_tof_parallel_links"],
-        topology_params["ring_parallel_links"]
+        topology_params["n_pods"], topology_params["servers_for_rack"], topology_params['protocol'],
+        topology_params['tof_rings'], topology_params['leaf_spine_parallel_links'],
+        topology_params["spine_tof_parallel_links"], topology_params["ring_parallel_links"]
     )
     utils.write_json_file(os.path.join(output_dir, "topology_info.json"), config)
 

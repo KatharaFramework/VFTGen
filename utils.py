@@ -26,7 +26,7 @@ def class_for_name(module_name, class_name):
     return getattr(m, class_name)
 
 
-def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol, tof_rings,
+def three_level_fat_tree_config(k_leaf, k_top, r, n_pods, servers_for_rack, protocol, tof_rings,
                                 leaf_spine_parallel_links=1, spine_tof_parallel_links=1, ring_parallel_links=1):
     # Formulas used:
     #   Number of Planes: k_leaf / r
@@ -44,7 +44,7 @@ def three_level_fat_tree_config(k_leaf, k_top, r, servers_for_rack, protocol, to
         'leaf_spine_parallel_links': leaf_spine_parallel_links,
         'spine_tof_parallel_links': spine_tof_parallel_links,
         'ring_parallel_links': ring_parallel_links,
-        'number_of_pods': int((k_leaf + k_top) / r),
+        'number_of_pods': int((k_leaf + k_top) / r) if n_pods is None else n_pods,
         'pod': {
             'spines_for_level': [k_leaf],
             'leafs_for_pod': k_top,
