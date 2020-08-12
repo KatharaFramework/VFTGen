@@ -6,12 +6,12 @@ import os
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--d', type=str, required=True)
+    parser.add_argument('-d', '--dir', type=str, required=True)
     parser.add_argument('--type', type=str, required=False)
 
     args = parser.parse_args()
 
-    with open(os.path.join(args.d, 'lab.json')) as lab_json:
+    with open(os.path.join(args.dir, 'lab.json')) as lab_json:
         lab = json.load(lab_json)
         if not args.type:
             print("--------------------- AGGREGATION LAYER ------------------------\n")

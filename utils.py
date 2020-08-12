@@ -55,4 +55,5 @@ def three_level_fat_tree_config(k_leaf, k_top, r, n_pods, servers_for_rack, prot
             'tofs_for_plane': k_top
         }
     }
+
     return config
