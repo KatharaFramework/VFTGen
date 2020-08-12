@@ -60,8 +60,8 @@ if __name__ == '__main__':
 
     config = utils.three_level_fat_tree_config(
         topology_params["k_leaf"], topology_params["k_top"], topology_params["redundancy_factor"],
-        topology_params["n_pods"], topology_params["servers_for_rack"], topology_params['protocol'],
-        topology_params['tof_rings'], topology_params['leaf_spine_parallel_links'],
+        topology_params["n_pods"] if "n_pods" in topology_params else None, topology_params["servers_for_rack"],
+        topology_params['protocol'], topology_params['tof_rings'], topology_params['leaf_spine_parallel_links'],
         topology_params["spine_tof_parallel_links"], topology_params["ring_parallel_links"]
     )
     utils.write_json_file(os.path.join(output_dir, "topology_info.json"), config)
