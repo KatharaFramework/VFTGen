@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--redundancy', type=int, required=False)
     parser.add_argument('--pods', type=int, required=False)
     parser.add_argument('--servers', type=int, required=False)
-    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
+    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'juniper_rift', 'open_fabric'])
     parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath('.'))
     parser.add_argument('-n', '--name', type=str, required=False, default=None)
     parser.add_argument('--kube_net', action="store_true", required=False, default=False)
