@@ -45,22 +45,23 @@ groups {
 system {
     host-name %s;
     root-authentication {
-        encrypted-password "$6$QMRUo$LNAfxi1P1RljyWHeUl6qFSDMzFAn8Kqzt.vo/""" \
-    """LfcoAfwstTvc8qT0WUrnMMGhdW4Dn6p8V15nkP6/ySoHBIAP.";
+        encrypted-password "$6$QMRUo$LNAfxi1P1RljyWHeUl6qFSDMzFAn8Kqzt.vo/LfcoAfwstTvc8qT0WUrnMMGhdW4Dn6p8V15nkP6/ySoHBIAP.";
+    }
+    scripts {
+        language python3;
+    }
 }
-scripts {
-language python3;
-}
-}
+
 protocols {
-rift {
-apply-groups rift-defaults;
-name %s;
-startup-holddown 5;
+    rift {
+        apply-groups rift-defaults;
+        name %s;
+        startup-holddown 5;
 %s
 %s
+    }
 }
-}
+
 %s
 """
 
