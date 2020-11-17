@@ -84,9 +84,12 @@ JUNIPER_RIFT_POLICY_TEMPLATE = \
     "        term t1 {\n" + \
     "            from {\n" + \
     "                protocol direct;\n" + \
-    "                route-filter %s/24 upto /24 accept;\n" + \
+    "                route-filter %s/24 exact;\n" + \
     "            }\n" + \
     "            then accept;\n" + \
+    "        }\n" + \
+    "        term t2 {\n" + \
+    "            then reject;\n" + \
     "        }\n" + \
     "    }\n" + \
     "}"
