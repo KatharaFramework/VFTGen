@@ -26,6 +26,7 @@ BGPD_BASIC_CONFIG = \
 router bgp {as_number}
  timers bgp 3 9
  bgp router-id {router_id}
+ no bgp ebgp-requires-policy
  bgp bestpath as-path multipath-relax
  bgp bestpath compare-routerid
 {neighbor_config}"""
@@ -79,8 +80,6 @@ class BgpConfigurator(IConfigurator):
         """
         with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
             lab_config.write('%s[image]="kathara/frr"\n' % node.name)
-            if type(node) != Server:
-                lab_config.write('%s[sysctl]="net.ipv4.fib_multipath_hash_policy=1"\n' % node.name)
 
         os.mkdir('%s/%s/etc/frr' % (lab.lab_dir_name, node.name))
         with open('%s/%s/etc/frr/daemons' % (lab.lab_dir_name, node.name), 'w') as daemons:

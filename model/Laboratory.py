@@ -37,6 +37,9 @@ class Laboratory(object):
             for interface in node.get_phy_interfaces():
                 lab_config.write('%s[%d]="%s"\n' % (node.name, interface.number, interface.collision_domain))
 
+            if type(node) != Server:
+                lab_config.write('%s[sysctl]="net.ipv4.fib_multipath_hash_policy=1"\n' % node.name)
+
     def write_startup(self, node):
         """
         write the (node.name).startup file for the node

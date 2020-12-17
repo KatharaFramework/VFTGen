@@ -102,7 +102,6 @@ class JuniperRiftConfigurator(IConfigurator):
     def _configure_node(self, lab, node):
         with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
             lab_config.write('%s[image]="crpd-rift:latest"\n' % node.name)
-            lab_config.write('%s[sysctl]="net.ipv4.fib_multipath_hash_policy=1"\n' % node.name)
 
         interfaces_strings = []
         for interface in node.get_phy_interfaces():
