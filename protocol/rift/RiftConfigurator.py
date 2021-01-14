@@ -49,7 +49,7 @@ class RiftConfigurator(IConfigurator):
         :return:
         """
         with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
-            lab_config.write('%s[image]="kathara/rift"\n' % node.name)
+            lab_config.write('%s[image]="kathara/rift-py"\n' % node.name)
 
             os.mkdir('%s/%s/etc/rift' % (lab.lab_dir_name, node.name))
 

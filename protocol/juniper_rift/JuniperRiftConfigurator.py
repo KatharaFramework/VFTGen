@@ -101,7 +101,7 @@ JUNIPER_RIFT_POLICY_TEMPLATE = \
 class JuniperRiftConfigurator(IConfigurator):
     def _configure_node(self, lab, node):
         with open('%s/lab.conf' % lab.lab_dir_name, 'a') as lab_config:
-            lab_config.write('%s[image]="crpd-rift:latest"\n' % node.name)
+            lab_config.write('%s[image]="kathara/crpd-rift:latest"\n' % node.name)
 
         interfaces_strings = []
         for interface in node.get_phy_interfaces():
@@ -132,9 +132,16 @@ class JuniperRiftConfigurator(IConfigurator):
 
             config_file.write(config_content.encode('utf-8'))
 
+        for service in ['auditd', 'eventd', 'license-check', 'na-grpcd', 'ppmd', 'xmlproxyd', 'bfdd', 'jsd', 'mgd-api',
+                        'na-mqttd', 'rsyslog']:
+            service_path = '%s/%s/etc/service/%s/supervise' % (lab.lab_dir_name, node.name, service)
+            os.makedirs(service_path)
+            with open('%s/control' % service_path, 'w') as control_file:
+                control_file.write('d')
+
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
             startup.write(
-                "\nfor d in rpd mgd jsd mgd-api rift-proxyd; do until pidof $d; do sleep 1; done; done\n" +
+                "\nfor d in rpd mgd rift-proxyd; do until pidof $d; do sleep 1; done; done\n" +
                 "until cli -c \"show version\" | grep -i junos; do sleep 1; done\n" +
                 "cli -c \"configure; load replace /config/juniper_rift.conf.gz; commit\" &> /tmp/config.errors"
             )
