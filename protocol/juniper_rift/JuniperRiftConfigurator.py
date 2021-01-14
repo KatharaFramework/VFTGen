@@ -15,7 +15,7 @@ from ..IConfigurator import IConfigurator
 
 JUNIPER_RIFT_CONFIG_TEMPLATE = \
     """
-version "20200427.183436_rbu-builder.r1104920 [rbu-builder]";
+version "20201001.232355__devpublish.r3242 [_devpublish]";
 groups {
     rift-defaults {
         protocols {
