@@ -56,7 +56,7 @@ protocols {
     rift {
         apply-groups rift-defaults;
         name %s;
-        startup-holddown 5;
+        # startup-holddown 5;
 %s
 %s
     }
@@ -67,8 +67,8 @@ protocols {
 
 JUNIPER_RIFT_CONFIG_INTERFACE_TEMPLATE = \
     "        interface %s {\n" + \
-    "            hold-time 600;\n" + \
-    "            lie-transmit-interval 30;\n" + \
+    "            # hold-time 600;\n" + \
+    "            # lie-transmit-interval 30;\n" + \
     "        }"
 
 JUNIPER_RIFT_EXPORT_TEMPLATE = \
@@ -134,6 +134,7 @@ class JuniperRiftConfigurator(IConfigurator):
 
         with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
             startup.write(
-                "\nfor d in rpd mgd jsd mgd-api rift-proxyd; do until pidof $d; do sleep 1; done; done;\n" +
+                "\nfor d in rpd mgd jsd mgd-api rift-proxyd; do until pidof $d; do sleep 1; done; done\n" +
+                "until cli -c \"show version\" | grep -i junos; do sleep 1; done\n" +
                 "cli -c \"configure; load replace /config/juniper_rift.conf.gz; commit\" &> /tmp/config.errors"
             )
