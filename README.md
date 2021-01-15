@@ -195,10 +195,11 @@ This will open a shell into the machine `machine_name` root directory.
 ## Build RIFT-Python image
 
 In order to run RIFT protocol, it is required to build the corresponding Docker Image. 
-To do so, run the following command (from the root directory of this project):
+To do so, run the following commands (from the root directory of this project):
 
 ```
-$ docker build -t kathara/rift .
+$ cd Dockerfiles/rift-py
+$ docker build -t kathara/rift-py .
 ```
 
 ## Additional tools
