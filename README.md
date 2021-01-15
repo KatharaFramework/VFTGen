@@ -1,5 +1,5 @@
-# Fat Tree Generator
-The Fat Tree Generator is a tool that allows to create three levels Fat Tree
+# VFTGen
+VFTGen is a tool that allows to create three levels Fat Tree
 topologies (single-plane or multi-planes) and configure them to run on Kathará. 
 
 **N.B. :** until now only three-level architectures are possible.
@@ -66,7 +66,7 @@ It is also possible to use `-d` param to specify an output directory. If not spe
 directory is used.
 
 The `--name` parameter specifies a name for the directory where the topology is generated. 
-By default, the generated directory name is `fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>`.
+By default, the generated directory name is `fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel>`.
 
 `--kube_net` flag is used to configure the network interfaces to work with Megalos version of Kathará.
 
@@ -82,7 +82,7 @@ $ python3 main.py
 the CLI parameters described above.
  
 After that, in the current folder (or in the one specified with `-d` option) a
-`fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>` directory 
+`fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel>` directory 
 (or a directory with the name specified using `-n` option) is created, containing: 
 
 - a `lab` folder: containing all the configurations files for Kathará; 
@@ -208,12 +208,12 @@ It's also possible to use the `get_ip.py` script to get the nodes IPs of the gen
 
 To get all the IPs in the network type on terminal: 
 ```
-$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol>
+$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel>
 ```
 
 To get the IPs of a particular type of nodes type on terminal: 
 ```
-$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol> --type <node_type>
+$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel> --type <node_type>
 ```
 Possible values for `<node_type>` param are: 
  - `server`
