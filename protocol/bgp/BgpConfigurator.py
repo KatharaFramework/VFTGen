@@ -1,14 +1,12 @@
 import os
 
-from model.node_types.Server import Server
 from protocol.bgp.ASManager import ASManager
 from ..IConfigurator import IConfigurator
 
 # --------------------------- Start of BGP configuration templates -----------------------------------------------
 
 ZEBRA_CONFIG = \
-    """
-hostname frr
+    """hostname frr
 password frr
 enable password frr
 """
