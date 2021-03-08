@@ -110,9 +110,9 @@ class JuniperRiftConfigurator(IConfigurator):
         interfaces_string = "\n".join(interfaces_strings)
 
         if type(node) == Tof:
-            node_id = "00%02x%02x%02x650000" % (node.plane, node.level, node.number)
+            node_id = "%d%d%d" % (node.plane, node.level, node.number)
         else:
-            node_id = "00%02x%02x%02x650000" % (node.pod_number, node.level, node.number)
+            node_id = "%d%d%d" % (node.pod_number, node.level, node.number)
 
         node_level = "top-of-fabric" if type(node) == Tof else "leaf" if type(node) == Leaf else "auto"
 
