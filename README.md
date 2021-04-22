@@ -11,7 +11,6 @@ are available on non-Linux platform (i.e. ECMP).
 ## Prerequisites
 
 - Python 3
-- Docker
 - Kathará (https://www.kathara.org/)
 
 ## Usage 
