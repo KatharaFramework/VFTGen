@@ -1,11 +1,12 @@
 {
   "k_leaf": 2,
   "k_top": 2,
-  "redundancy_factor": 1,
+  "redundancy_factor": 2,
+  "n_pods" : 2,
   "servers_for_rack": 1,
-  "pods": 2,
-  "leaf_spine_parallel_links": 2,
-  "spine_tof_parallel_links": 2,
-  "ring_parallel_links": 2,
-  "protocol": "rift"
+  "tof_rings": false,
+  "leaf_spine_parallel_links": 1,
+  "spine_tof_parallel_links": 1,
+  "ring_parallel_links": 1,
+  "protocol": "bgp"
 }

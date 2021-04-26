@@ -40,7 +40,7 @@ if __name__ == '__main__':
             "protocol": args.protocol
         }
     else:
-        print("An argument is missing, using config.json...")
+        print("No parameters specified, using config.json...")
         topology_params = utils.read_config('config.json')
 
     if args.name:

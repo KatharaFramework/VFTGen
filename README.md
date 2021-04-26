@@ -28,10 +28,10 @@ The parameters to build a topology can be described in a `config.json` file.
   "redundancy_factor": 2,
   "n_pods" : 2,
   "servers_for_rack": 1,
-  "tof_rings": true,
+  "tof_rings": false,
   "leaf_spine_parallel_links": 1, 
   "spine_tof_parallel_links": 1, 
-  "ring_parallel_links": 1,
+  "ring_parallel_links": 0,
   "protocol": "bgp"
 }
 ```
@@ -74,7 +74,7 @@ By default, the generated directory name is `fat_tree_<k_leaf>_<k_top>_<r>_<prot
 In order to run the tool, type on terminal: 
 
 ```
-$ python3 main.py
+$ python3 vftgen.py
 ```
 
 **N.B. :** in this case the params values are taken from `config.json` file. Otherwise, specify
