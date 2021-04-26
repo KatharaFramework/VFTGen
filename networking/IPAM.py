@@ -2,7 +2,7 @@ import ipaddress
 
 BASE_IPV4_NET = ipaddress.ip_network("10.0.0.0/8")
 BASE_IPV4_SERVER_NET = ipaddress.ip_network("200.0.0.0/8")
-BASE_IPV4_LOOPBACK_NET = ipaddress.ip_network("127.0.0.0/8")
+BASE_IPV4_LOOPBACK_NET = ipaddress.ip_network("192.168.0.0/16")
 
 
 class IPAM(object):
@@ -28,7 +28,6 @@ class IPAM(object):
             self.ipv4_subnets = BASE_IPV4_NET.subnets(new_prefix=30)
             self.ipv4_server_subnets = BASE_IPV4_SERVER_NET.subnets(new_prefix=24)
             self.ipv4_loopback_ips = BASE_IPV4_LOOPBACK_NET.hosts()
-            next(self.ipv4_loopback_ips)  # Remove 127.0.0.1 which is reserved
 
             self.ipv4_assignments = {}
             self.ipv4_server_assignments = {}

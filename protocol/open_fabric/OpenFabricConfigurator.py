@@ -1,7 +1,6 @@
 import os
 
 from model.node_types.Leaf import Leaf
-from model.node_types.Server import Server
 from model.node_types.Spine import Spine
 from model.node_types.Tof import Tof
 from ..IConfigurator import IConfigurator
@@ -9,13 +8,18 @@ from ..IConfigurator import IConfigurator
 # --------------------------- Start of OpenFabric configuration templates ---------------------------------------------
 
 ZEBRA_CONFIG = \
-    """
-hostname frr
+    """hostname frr
 password frr
 enable password frr
+
 """
 
-OPENFABRIC_ROUTER_CONFIGURATION = """router openfabric %s
+ZEBRA_IFACE_CONFIGURATION = """
+interface %s
+ ip address %s
+"""
+
+OPENFABRIC_ROUTER_CONFIGURATION = """router openfabric 1
  net %s
  fabric-tier %d
  max-lsp-lifetime 65535
@@ -26,7 +30,7 @@ OPENFABRIC_ROUTER_CONFIGURATION = """router openfabric %s
 
 OPENFABRIC_IFACE_CONFIGURATION = """
 interface %s
- ip router openfabric %s
+ ip router openfabric 1
 """
 
 
@@ -53,9 +57,6 @@ class OpenFabricConfigurator(IConfigurator):
             daemons.write('zebra=yes\n')
             daemons.write('fabricd=yes\n')
 
-        with open('%s/%s/etc/frr/zebra.conf' % (lab.lab_dir_name, node.name), 'w') as zebra_configuration:
-            zebra_configuration.write(ZEBRA_CONFIG)
-
         with open('%s/%s/etc/frr/fabricd.conf' % (lab.lab_dir_name, node.name), 'w') as fabricd_configuration:
             tier_n = 0
             if type(node) == Spine:
@@ -63,21 +64,41 @@ class OpenFabricConfigurator(IConfigurator):
             elif type(node) == Tof:
                 tier_n = 2
 
-            fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION %
-                                        (node.name, self._get_net_iso_format(node), tier_n)
-                                        )
+            fabricd_configuration.write(OPENFABRIC_ROUTER_CONFIGURATION % (self._get_net_iso_format(node), tier_n))
 
+            # We set the overload-bit on the Leaves, in order to avoid transit traffic
             if type(node) == Leaf:
                 fabricd_configuration.write(" set-overload-bit\n")
 
-            for interface in node.get_phy_interfaces():
-                fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % (interface.get_name(), node.name))
+            ips_to_define = {}
+            for interface in node.interfaces:
+                # Enable OpenFabric on node interfaces
+                fabricd_configuration.write(OPENFABRIC_IFACE_CONFIGURATION % interface.get_name())
 
-                if type(node) == Leaf:
-                    if 'server' in interface.neighbours[0][0]:
-                        fabricd_configuration.write(" openfabric passive\n")
+                # Loopbacks and Server Interfaces are passive, we do not need to form adjacency with them
+                if 'lo' in interface.get_name() or (type(node) == Leaf and 'server' in interface.neighbours[0][0]):
+                    fabricd_configuration.write(" openfabric passive\n")
 
-        with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
+                    # Loopbacks and Server IP Addresses are also written in the zebra.conf file, in order to announce
+                    # them on OpenFabric
+                    ips_to_define[interface.get_name()] = str(interface.ip_address) + "/" + \
+                                                          str(interface.network.prefixlen)
+
+        with open('%s/%s/etc/frr/zebra.conf' % (lab.lab_dir_name, node.name), 'w') as zebra_configuration:
+            zebra_configuration.write(ZEBRA_CONFIG)
+
+            # We write the previously saved IP Addresses
+            for interface_name, ip in ips_to_define.items():
+                zebra_configuration.write(ZEBRA_IFACE_CONFIGURATION % (interface_name, ip))
+
+        # The startup file is overwritten in OpenFabric
+        # Interfaces do not need an IP address (if it is defined, it is announced, but we want to skip that)
+        # The only IP Address assigned is on Leaves, in particular on Server interface, since
+        # the test framework needs the Server Prefix written in the routing kernel table
+        with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'w') as startup:
+            for interface_name, ip in filter(lambda x: '200.' in x[1] and '/24' in x[1], ips_to_define.items()):
+                startup.write('ifconfig %s %s up\n' % (interface_name, ip))
+
             startup.write('/etc/init.d/frr start\n')
 
     @staticmethod
