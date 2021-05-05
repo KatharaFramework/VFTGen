@@ -40,15 +40,19 @@ if __name__ == '__main__':
             "protocol": args.protocol
         }
     else:
-        print("An argument is missing, using config.json...")
+        print("No parameters specified, using config.json...")
         topology_params = utils.read_config('config.json')
 
     if args.name:
         directory_name = args.name
     else:
-        directory_name = 'fat_tree_%d_%d_%d_%s' % (topology_params["k_leaf"], topology_params["k_top"],
-                                                   topology_params["redundancy_factor"], topology_params['protocol']
-                                                   )
+        directory_name = 'fat_tree_%d_%d_%d+%d_%d_%d+%s' % (topology_params["k_leaf"], topology_params["k_top"],
+                                                            topology_params["redundancy_factor"],
+                                                            topology_params['leaf_spine_parallel_links'],
+                                                            topology_params['spine_tof_parallel_links'],
+                                                            topology_params['ring_parallel_links'],
+                                                            topology_params['protocol']
+                                                            )
 
     output_dir = os.path.join(args.dir, directory_name)
 

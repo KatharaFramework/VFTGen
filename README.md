@@ -1,5 +1,5 @@
-# Fat Tree Generator
-The Fat Tree Generator is a tool that allows to create three levels Fat Tree
+# VFTGen
+VFTGen is a tool that allows to create three levels Fat Tree
 topologies (single-plane or multi-planes) and configure them to run on Kathará. 
 
 **N.B. :** until now only three-level architectures are possible.
@@ -11,7 +11,6 @@ are available on non-Linux platform (i.e. ECMP).
 ## Prerequisites
 
 - Python 3
-- Docker
 - Kathará (https://www.kathara.org/)
 
 ## Usage 
@@ -29,10 +28,10 @@ The parameters to build a topology can be described in a `config.json` file.
   "redundancy_factor": 2,
   "n_pods" : 2,
   "servers_for_rack": 1,
-  "tof_rings": true,
+  "tof_rings": false,
   "leaf_spine_parallel_links": 1, 
   "spine_tof_parallel_links": 1, 
-  "ring_parallel_links": 1,
+  "ring_parallel_links": 0,
   "protocol": "bgp"
 }
 ```
@@ -66,7 +65,7 @@ It is also possible to use `-d` param to specify an output directory. If not spe
 directory is used.
 
 The `--name` parameter specifies a name for the directory where the topology is generated. 
-By default, the generated directory name is `fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>`.
+By default, the generated directory name is `fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel>`.
 
 `--kube_net` flag is used to configure the network interfaces to work with Megalos version of Kathará.
 
@@ -75,14 +74,14 @@ By default, the generated directory name is `fat_tree_<k_leaf>_<k_top>_<r>_<prto
 In order to run the tool, type on terminal: 
 
 ```
-$ python3 main.py
+$ python3 vftgen.py
 ```
 
 **N.B. :** in this case the params values are taken from `config.json` file. Otherwise, specify
 the CLI parameters described above.
  
 After that, in the current folder (or in the one specified with `-d` option) a
-`fat_tree_<k_leaf>_<k_top>_<r>_<prtocol>` directory 
+`fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel>` directory 
 (or a directory with the name specified using `-n` option) is created, containing: 
 
 - a `lab` folder: containing all the configurations files for Kathará; 
@@ -195,10 +194,11 @@ This will open a shell into the machine `machine_name` root directory.
 ## Build RIFT-Python image
 
 In order to run RIFT protocol, it is required to build the corresponding Docker Image. 
-To do so, run the following command (from the root directory of this project):
+To do so, run the following commands (from the root directory of this project):
 
 ```
-$ docker build -t kathara/rift .
+$ cd Dockerfiles/rift-py
+$ docker build -t kathara/rift-py .
 ```
 
 ## Additional tools
@@ -208,12 +208,12 @@ It's also possible to use the `get_ip.py` script to get the nodes IPs of the gen
 
 To get all the IPs in the network type on terminal: 
 ```
-$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol>
+$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel>
 ```
 
 To get the IPs of a particular type of nodes type on terminal: 
 ```
-$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol> --type <node_type>
+$ python3 get_ip.py -d fat_tree_<k_leaf>_<k_top>_<r>_<protocol>+<ls_parallel>_<st_parallel>_<ring_parallel> --type <node_type>
 ```
 Possible values for `<node_type>` param are: 
  - `server`
