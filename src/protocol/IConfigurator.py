@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from model.node_types.Server import Server
+from ..model.node_types.Server import Server
 
 
 class IConfigurator(ABC):

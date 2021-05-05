@@ -1,6 +1,6 @@
 import os
 
-from protocol.bgp.ASManager import ASManager
+from .ASManager import ASManager
 from ..IConfigurator import IConfigurator
 
 # --------------------------- Start of BGP configuration templates -----------------------------------------------

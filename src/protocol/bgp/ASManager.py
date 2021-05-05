@@ -1,6 +1,6 @@
-from model.node_types.Leaf import Leaf
-from model.node_types.Spine import Spine
-from model.node_types.Tof import Tof
+from ...model.node_types.Leaf import Leaf
+from ...model.node_types.Spine import Spine
+from ...model.node_types.Tof import Tof
 
 
 class ASManager(object):

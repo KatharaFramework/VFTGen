@@ -1,5 +1,5 @@
-from networking.CollisionDomain import CollisionDomain
 from ..node.Node import Node
+from ...networking.CollisionDomain import CollisionDomain
 
 
 class Server(Node):

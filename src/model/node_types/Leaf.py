@@ -1,8 +1,8 @@
-from model.node.Interface import Interface
-from model.node.LoopbackInterface import LoopbackInterface
-from networking.CollisionDomain import CollisionDomain
-from networking.IPAM import IPAM
 from ..node.Node import Node
+from ...model.node.Interface import Interface
+from ...model.node.LoopbackInterface import LoopbackInterface
+from ...networking.CollisionDomain import CollisionDomain
+from ...networking.IPAM import IPAM
 
 
 class Leaf(Node):

@@ -1,7 +1,7 @@
-from networking.CollisionDomain import CollisionDomain
-from networking.IPAM import IPAM
 from .Interface import Interface
 from .LoopbackInterface import LoopbackInterface
+from ...networking.CollisionDomain import CollisionDomain
+from ...networking.IPAM import IPAM
 
 
 class Node(object):

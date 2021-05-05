@@ -2,67 +2,8 @@
 
 import argparse
 import os
-import shutil
 
-import utils
-from model.FatTree import FatTree
-from model.Laboratory import Laboratory
-
-
-def create_fat_tree(topology_params, output_dir_name=None, dir_name=None, is_k8s=False):
-    utils.KUBE_NET = is_k8s
-
-    if dir_name:
-        directory_name = dir_name
-    else:
-        directory_name = 'fat_tree_%d_%d_%d+%d_%d_%d+%s' % (topology_params["k_leaf"], topology_params["k_top"],
-                                                            topology_params["redundancy_factor"],
-                                                            topology_params['leaf_spine_parallel_links'],
-                                                            topology_params['spine_tof_parallel_links'],
-                                                            topology_params['ring_parallel_links'],
-                                                            topology_params['protocol']
-                                                            )
-
-    output_dir_name = output_dir_name if output_dir_name else os.path.abspath('.')
-    output_dir = os.path.join(output_dir_name, directory_name)
-
-    if os.path.isdir(output_dir):
-        shutil.rmtree(output_dir)
-
-    lab_dir = os.path.join(output_dir, 'lab')
-    os.makedirs(lab_dir)
-
-    config = utils.three_level_fat_tree_config(
-        topology_params["k_leaf"], topology_params["k_top"], topology_params["redundancy_factor"],
-        topology_params["n_pods"] if "n_pods" in topology_params else None, topology_params["servers_for_rack"],
-        topology_params['protocol'], topology_params['tof_rings'], topology_params['leaf_spine_parallel_links'],
-        topology_params["spine_tof_parallel_links"], topology_params["ring_parallel_links"]
-    )
-    utils.write_json_file(os.path.join(output_dir, "topology_info.json"), config)
-
-    protocol = config["protocol"] if "protocol" in config else None
-    number_of_planes = int(topology_params["k_leaf"] / topology_params["redundancy_factor"])
-
-    if topology_params['tof_rings'] and number_of_planes == 1:
-        raise Exception('It is not possible to add ToF rings in a single plane topology!')
-
-    fat_tree = FatTree()
-    fat_tree.create(config)
-
-    lab = Laboratory(lab_dir)
-    lab.dump(fat_tree)
-
-    if protocol:
-        protocol_class_name = "".join(map(lambda x: x.capitalize(), protocol.split("_")))
-
-        protocol_configurator = utils.class_for_name("protocol.%s" % protocol,
-                                                     "%sConfigurator" % protocol_class_name
-                                                     )()
-
-        protocol_configurator.configure(lab, fat_tree)
-
-    utils.write_json_file(os.path.join(output_dir, "lab.json"), fat_tree.to_dict())
-
+from src.utils import create_fat_tree, read_config
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -96,6 +37,6 @@ if __name__ == '__main__':
         }
     else:
         print("No parameters specified, using config.json...")
-        params = utils.read_config('config.json')
+        params = read_config('config.json')
 
     create_fat_tree(params, args.dir, args.name, args.kube_net)
