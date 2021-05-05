@@ -3,8 +3,8 @@ import json
 import os
 import shutil
 
-from src.model.FatTree import FatTree
-from src.model.Laboratory import Laboratory
+from .model.FatTree import FatTree
+from .model.Laboratory import Laboratory
 
 KUBE_NET = False
 
@@ -34,7 +34,7 @@ def create_fat_tree(topology_params, output_dir_name=None, dir_name=None, is_k8s
                                                             topology_params['protocol']
                                                             )
 
-    output_dir_name = output_dir_name if output_dir_name else os.path.abspath('.')
+    output_dir_name = output_dir_name if output_dir_name else os.path.abspath('..')
     output_dir = os.path.join(output_dir_name, directory_name)
 
     if os.path.isdir(output_dir):
@@ -95,7 +95,7 @@ def write_json_file(file, content):
 
 
 def class_for_name(module_name, class_name):
-    m = importlib.import_module(module_name + "." + class_name)
+    m = importlib.import_module("." + module_name + "." + class_name, package=__package__)
     return getattr(m, class_name)
 
 

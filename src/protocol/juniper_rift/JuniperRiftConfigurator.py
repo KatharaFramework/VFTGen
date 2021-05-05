@@ -1,8 +1,8 @@
 import os
 
-from model.node_types.Leaf import Leaf
-from model.node_types.Tof import Tof
 from ..IConfigurator import IConfigurator
+from ...model.node_types.Leaf import Leaf
+from ...model.node_types.Tof import Tof
 
 # --------------------------- Start of Juniper Rift configuration templates --------------------------------------------
 
