@@ -1,11 +1,3 @@
 .idea/
 __pycache__
-__init__
-.vscode/
-lab/
-lab.json
-new_lab.json
-*.pcap
-output/
 fat_tree*/
-.vs/
