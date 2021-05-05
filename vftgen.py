@@ -8,43 +8,12 @@ import utils
 from model.FatTree import FatTree
 from model.Laboratory import Laboratory
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--k_leaf', type=int, required=False)
-    parser.add_argument('--k_top', type=int, required=False)
-    parser.add_argument('-r', '--redundancy', type=int, required=False)
-    parser.add_argument('--pods', type=int, required=False)
-    parser.add_argument('--servers', type=int, required=False)
-    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'juniper_rift', 'open_fabric'])
-    parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath('.'))
-    parser.add_argument('-n', '--name', type=str, required=False, default=None)
-    parser.add_argument('--kube_net', action="store_true", required=False, default=False)
-    parser.add_argument('--tof_rings', action="store_true", required=False, default=False)
-    parser.add_argument('--ls_parallel', type=int, required=False)
-    parser.add_argument('--st_parallel', type=int, required=False)
-    parser.add_argument('--ring_parallel', type=int, required=False)
 
-    args = parser.parse_args()
-    utils.KUBE_NET = args.kube_net
-    if args.k_leaf and args.k_top and args.redundancy and args.servers is not None and args.protocol:
-        topology_params = {
-            "k_leaf": args.k_leaf,
-            "k_top": args.k_top,
-            "redundancy_factor": args.redundancy,
-            "n_pods": args.pods if args.pods else None,
-            "servers_for_rack": args.servers,
-            "tof_rings": args.tof_rings,
-            "leaf_spine_parallel_links": args.ls_parallel if args.ls_parallel else 1,
-            "spine_tof_parallel_links": args.st_parallel if args.st_parallel else 1,
-            "ring_parallel_links": args.ring_parallel if args.ring_parallel else 1,
-            "protocol": args.protocol
-        }
-    else:
-        print("No parameters specified, using config.json...")
-        topology_params = utils.read_config('config.json')
+def create_fat_tree(topology_params, output_dir_name=None, dir_name=None, is_k8s=False):
+    utils.KUBE_NET = is_k8s
 
-    if args.name:
-        directory_name = args.name
+    if dir_name:
+        directory_name = dir_name
     else:
         directory_name = 'fat_tree_%d_%d_%d+%d_%d_%d+%s' % (topology_params["k_leaf"], topology_params["k_top"],
                                                             topology_params["redundancy_factor"],
@@ -54,7 +23,8 @@ if __name__ == '__main__':
                                                             topology_params['protocol']
                                                             )
 
-    output_dir = os.path.join(args.dir, directory_name)
+    output_dir_name = output_dir_name if output_dir_name else os.path.abspath('.')
+    output_dir = os.path.join(output_dir_name, directory_name)
 
     if os.path.isdir(output_dir):
         shutil.rmtree(output_dir)
@@ -73,7 +43,7 @@ if __name__ == '__main__':
     protocol = config["protocol"] if "protocol" in config else None
     number_of_planes = int(topology_params["k_leaf"] / topology_params["redundancy_factor"])
 
-    if args.tof_rings and number_of_planes == 1:
+    if topology_params['tof_rings'] and number_of_planes == 1:
         raise Exception('It is not possible to add ToF rings in a single plane topology!')
 
     fat_tree = FatTree()
@@ -92,3 +62,40 @@ if __name__ == '__main__':
         protocol_configurator.configure(lab, fat_tree)
 
     utils.write_json_file(os.path.join(output_dir, "lab.json"), fat_tree.to_dict())
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--k_leaf', type=int, required=False)
+    parser.add_argument('--k_top', type=int, required=False)
+    parser.add_argument('-r', '--redundancy', type=int, required=False)
+    parser.add_argument('--pods', type=int, required=False)
+    parser.add_argument('--servers', type=int, required=False)
+    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'juniper_rift', 'open_fabric'])
+    parser.add_argument('--tof_rings', action="store_true", required=False, default=False)
+    parser.add_argument('--ls_parallel', type=int, required=False)
+    parser.add_argument('--st_parallel', type=int, required=False)
+    parser.add_argument('--ring_parallel', type=int, required=False)
+    parser.add_argument('-d', '--dir', type=str, required=False, default=os.path.abspath('.'))
+    parser.add_argument('-n', '--name', type=str, required=False, default=None)
+    parser.add_argument('--kube_net', action="store_true", required=False, default=False)
+
+    args = parser.parse_args()
+    if args.k_leaf and args.k_top and args.redundancy and args.servers is not None and args.protocol:
+        params = {
+            "k_leaf": args.k_leaf,
+            "k_top": args.k_top,
+            "redundancy_factor": args.redundancy,
+            "n_pods": args.pods if args.pods else None,
+            "servers_for_rack": args.servers,
+            "tof_rings": args.tof_rings,
+            "leaf_spine_parallel_links": args.ls_parallel if args.ls_parallel else 1,
+            "spine_tof_parallel_links": args.st_parallel if args.st_parallel else 1,
+            "ring_parallel_links": args.ring_parallel if args.ring_parallel else 1,
+            "protocol": args.protocol
+        }
+    else:
+        print("No parameters specified, using config.json...")
+        params = utils.read_config('config.json')
+
+    create_fat_tree(params, args.dir, args.name, args.kube_net)
