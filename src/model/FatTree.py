@@ -2,6 +2,8 @@ from .node_types.Leaf import Leaf
 from .node_types.Server import Server
 from .node_types.Spine import Spine
 from .node_types.Tof import Tof
+from ..networking.CollisionDomain import CollisionDomain
+from ..networking.IPAM import IPAM
 
 
 class FatTree(object):
@@ -11,9 +13,9 @@ class FatTree(object):
     __slots__ = ['pods', 'aggregation_layer']
 
     def __init__(self):
-        """
-        Initialize the object.
-        """
+        IPAM.get_instance().reset()
+        CollisionDomain.get_instance().reset()
+
         self.pods = {}
 
         self.aggregation_layer = {}

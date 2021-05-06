@@ -69,6 +69,9 @@ class BgpConfigurator(IConfigurator):
     This class is used to write the BGP configuration of nodes in a FatTree object
     """
 
+    def __init__(self):
+        ASManager.get_instance().reset()
+
     def _configure_node(self, lab, node):
         """
         Write the bgp configuration for the node

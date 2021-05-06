@@ -14,11 +14,16 @@ class CollisionDomain(object):
         if CollisionDomain.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            self.current_collision_domain = ('A', 'A', 'A', '@')
-
+            self.current_collision_domain = None
             self.collision_domain_assignments = {}
 
+            self.reset()
+
             CollisionDomain.__instance = self
+
+    def reset(self):
+        self.current_collision_domain = ('A', 'A', 'A', '@')
+        self.collision_domain_assignments = {}
 
     def get_collision_domain(self, first_node, second_node, link_id=0):
         """
