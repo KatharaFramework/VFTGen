@@ -22,11 +22,18 @@ class ASManager(object):
         if ASManager.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            self.current_as_number = 64512
-            self.max_as_number = 65534
+            self.current_as_number = None
+            self.max_as_number = None
             self.as_number_assignments = {}
 
+            self.reset()
+
             ASManager.__instance = self
+
+    def reset(self):
+        self.current_as_number = 64512
+        self.max_as_number = 65534
+        self.as_number_assignments = {}
 
     def get_as_number(self, node):
         """
