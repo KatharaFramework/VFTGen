@@ -1,9 +1,5 @@
 import ipaddress
 
-BASE_IPV4_NET = ipaddress.ip_network("10.0.0.0/8")
-BASE_IPV4_SERVER_NET = ipaddress.ip_network("200.0.0.0/8")
-BASE_IPV4_LOOPBACK_NET = ipaddress.ip_network("192.168.0.0/16")
-
 
 class IPAM(object):
     """
@@ -25,14 +21,24 @@ class IPAM(object):
         if IPAM.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            self.ipv4_subnets = BASE_IPV4_NET.subnets(new_prefix=30)
-            self.ipv4_server_subnets = BASE_IPV4_SERVER_NET.subnets(new_prefix=24)
-            self.ipv4_loopback_ips = BASE_IPV4_LOOPBACK_NET.hosts()
+            self.ipv4_subnets = None
+            self.ipv4_server_subnets = None
+            self.ipv4_loopback_ips = None
 
             self.ipv4_assignments = {}
             self.ipv4_server_assignments = {}
 
+            self.reset()
+
             IPAM.__instance = self
+
+    def reset(self):
+        self.ipv4_subnets = ipaddress.ip_network("10.0.0.0/8").subnets(new_prefix=30)
+        self.ipv4_server_subnets = ipaddress.ip_network("200.0.0.0/8").subnets(new_prefix=24)
+        self.ipv4_loopback_ips = ipaddress.ip_network("192.168.0.0/16").hosts()
+
+        self.ipv4_assignments = {}
+        self.ipv4_server_assignments = {}
 
     def get_ipv4_server_address_pair(self, collision_domain, first_node, second_node):
         """
