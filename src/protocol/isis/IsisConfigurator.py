@@ -30,6 +30,7 @@ ISIS_IFACE_CONFIGURATION = """
 interface %s
  ip router isis 1
  isis network point-to-point
+ isis circuit-type level-2-only
 """
 
 
@@ -63,18 +64,39 @@ class IsisConfigurator(IConfigurator):
             if type(node) == Leaf:
                 isisd_configuration.write(" set-overload-bit\n")
 
+            loopback_ip = None
+            ips_to_define = {}
             for interface in node.interfaces:
                 # Enable ISIS on node interfaces
                 isisd_configuration.write(ISIS_IFACE_CONFIGURATION % interface.get_name())
 
-                # Loopbacks and Server Interfaces are passive, we do not need to form adjacency with them
-                if 'lo' in interface.get_name() or (type(node) == Leaf and 'server' in interface.neighbours[0][0]):
+                # Server Interfaces are passive, we do not need to form adjacency with them
+                if 'lo' not in interface.get_name() and (type(node) == Leaf and 'server' in interface.neighbours[0][0]):
                     isisd_configuration.write(" isis passive\n")
+
+                    ips_to_define[interface.get_name()] = str(interface.ip_address) + "/" + \
+                                                          str(interface.network.prefixlen)
+
+                # Store Loopback IP (it is needed for zebra.conf configuration)
+                if 'lo' in interface.get_name():
+                    loopback_ip = str(interface.ip_address)
 
         with open('%s/%s/etc/frr/zebra.conf' % (lab.lab_dir_name, node.name), 'w') as zebra_configuration:
             zebra_configuration.write(ZEBRA_CONFIG)
 
-        with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'a') as startup:
+            # In order to run ISIS with unnumbered p2p networks, the loopback IP should be defined on each interface
+            # As stated in https://github.com/FRRouting/frr/issues/8397#issuecomment-813829356
+            for interface in node.interfaces:
+                zebra_configuration.write(ZEBRA_IFACE_CONFIGURATION % (interface.get_name(), loopback_ip + "/32"))
+
+        # The startup file is overwritten in ISIS
+        # Interfaces do not need an IP address (see the zebra.conf description above)
+        # The only IP Address assigned is on Leaves, in particular on Server interface, since
+        # the test framework needs the Server Prefix written in the routing kernel table
+        with open('%s/%s.startup' % (lab.lab_dir_name, node.name), 'w') as startup:
+            for interface_name, ip in ips_to_define.items():
+                startup.write('ifconfig %s %s up\n' % (interface_name, ip))
+
             startup.write('/etc/init.d/frr start\n')
 
     @staticmethod
