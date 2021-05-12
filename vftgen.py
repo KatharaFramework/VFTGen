@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--redundancy', type=int, required=False)
     parser.add_argument('--pods', type=int, required=False)
     parser.add_argument('--servers', type=int, required=False)
-    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric'])
+    parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric', 'isis'])
     parser.add_argument('--tof_rings', action="store_true", required=False, default=False)
     parser.add_argument('--ls_parallel', type=int, required=False)
     parser.add_argument('--st_parallel', type=int, required=False)
