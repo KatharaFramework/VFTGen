@@ -7,6 +7,11 @@ topologies (single-plane or multi-planes) and configure them to run on Kathará.
 **N.B. :** _Katharà_ works well on Linux, Windows and MacOS, but due to Docker limitations not all the functionalities
 are available on non-Linux platform (i.e. ECMP).
 
+## Publication
+
+- **VFTGen: a Tool to Perform Experiments in Virtual Fat Tree Topologies** (at **IM 2021**)
+    - [Paper](http://dl.ifip.org/db/conf/im/im2021demo/213179.pdf)
+    - [Presentation](https://www.youtube.com/watch?v=ovk7hvn57cc?)
 
 ## Prerequisites
 
