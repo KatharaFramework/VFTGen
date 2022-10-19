@@ -46,6 +46,7 @@ def create_fat_tree(topology_params, output_dir_name=None, dir_name=None, is_k8s
     config = three_level_fat_tree_config(
         topology_params["k_leaf"], topology_params["k_top"], topology_params["redundancy_factor"],
         topology_params["n_pods"] if "n_pods" in topology_params else None, topology_params["servers_for_rack"],
+        topology_params["vms_per_server"], topology_params["containers_per_vm"],
         topology_params['protocol'], topology_params['tof_rings'], topology_params['leaf_spine_parallel_links'],
         topology_params["spine_tof_parallel_links"], topology_params["ring_parallel_links"]
     )
@@ -99,8 +100,9 @@ def class_for_name(module_name, class_name):
     return getattr(m, class_name)
 
 
-def three_level_fat_tree_config(k_leaf, k_top, r, n_pods, servers_for_rack, protocol, tof_rings,
-                                leaf_spine_parallel_links=1, spine_tof_parallel_links=1, ring_parallel_links=1):
+def three_level_fat_tree_config(k_leaf, k_top, r, n_pods, servers_for_rack, vms_per_server, containers_per_vm,
+                                protocol, tof_rings, leaf_spine_parallel_links=1, spine_tof_parallel_links=1,
+                                ring_parallel_links=1):
     # Formulas used:
     #   Number of Planes: k_leaf / r
     #   Number of PoDs: (k_leaf + k_top) / r
@@ -121,7 +123,9 @@ def three_level_fat_tree_config(k_leaf, k_top, r, n_pods, servers_for_rack, prot
         'pod': {
             'spines_for_level': [k_leaf],
             'leafs_for_pod': k_top,
-            'servers_for_rack': servers_for_rack
+            'servers_for_rack': servers_for_rack,
+            'vms_per_server': vms_per_server,
+            'containers_per_vm': containers_per_vm
         },
         'aggregation_layer': {
             'number_of_planes': int(k_leaf / r),

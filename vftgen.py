@@ -12,6 +12,8 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--redundancy', type=int, required=False)
     parser.add_argument('--pods', type=int, required=False)
     parser.add_argument('--servers', type=int, required=False)
+    parser.add_argument('--vms', type=int, required=False, default=0)
+    parser.add_argument('--containers', type=int, required=False, default=0)
     parser.add_argument('--protocol', type=str, required=False, choices=['bgp', 'rift', 'open_fabric', 'isis'])
     parser.add_argument('--tof_rings', action="store_true", required=False, default=False)
     parser.add_argument('--ls_parallel', type=int, required=False)
@@ -29,6 +31,8 @@ if __name__ == '__main__':
             "redundancy_factor": args.redundancy,
             "n_pods": args.pods if args.pods else None,
             "servers_for_rack": args.servers,
+            "vms_per_server": args.vms,
+            "containers_per_vm": args.containers,
             "tof_rings": args.tof_rings,
             "leaf_spine_parallel_links": args.ls_parallel if args.ls_parallel else 1,
             "spine_tof_parallel_links": args.st_parallel if args.st_parallel else 1,

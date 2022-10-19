@@ -58,6 +58,7 @@ class FatTree(object):
 
         for leaf_num in range(1, pod_info['leafs_for_pod'] + 1):
             self._create_rack(pod_number, leaf_num, pod_info['spines_for_level'][0], pod_info['servers_for_rack'],
+                              config["pod"]['vms_per_server'], config["pod"]['containers_per_vm'],
                               config['leaf_spine_parallel_links'])
 
         for level, spine_nums in enumerate(pod_info['spines_for_level']):
@@ -88,7 +89,8 @@ class FatTree(object):
                                   config['spine_tof_parallel_links'])
                     self.pods[pod_number][spine.name] = spine
 
-    def _create_rack(self, pod_number, leaf_number, connected_spines, connected_server, leaf_spine_parallel_links):
+    def _create_rack(self, pod_number, leaf_number, connected_spines, connected_server, vms_per_server,
+                     containers_per_vm, leaf_spine_parallel_links):
         """
         Considering leaf as ToR creates a leaf and the servers connected
         :param pod_number: (int) the number of the pod of the rack
@@ -104,7 +106,7 @@ class FatTree(object):
         for server_num in range(1, connected_server + 1):
             server_name = 'server_%d_%d_%d' % (pod_number, leaf_number, server_num)
 
-            server = Server(server_name, leaf.name)
+            server = Server(server_name, vms_per_server, containers_per_vm, leaf.name)
             self.pods[pod_number][server_name] = server
 
     def _create_aggregation_layer_plane(self, plane, tofs_for_plane, aggregation_layer_level,

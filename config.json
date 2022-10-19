@@ -4,6 +4,8 @@
   "redundancy_factor": 2,
   "n_pods" : 2,
   "servers_for_rack": 1,
+   "vms_per_server": 0,
+  "containers_per_vm": 0,
   "tof_rings": false,
   "leaf_spine_parallel_links": 1,
   "spine_tof_parallel_links": 1,
