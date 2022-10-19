@@ -61,7 +61,6 @@ class Laboratory(object):
             self.write_startup(self.lab_dir_name, node)
 
         if type(node) == Server:
-            self.write_lab_conf(self.lab_dir_name, node)
             self.write_startup(self.lab_dir_name, node)
 
             if node.vms_number > 0:
