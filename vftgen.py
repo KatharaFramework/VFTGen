@@ -40,7 +40,19 @@ if __name__ == '__main__':
             "protocol": args.protocol
         }
     else:
-        print("No parameters specified, using config.json...")
+        missing_params = []
+        if not args.k_leaf:
+            missing_params.append("--k_leaf")
+        if not args.k_top:
+            missing_params.append("--k_top")
+        if not args.redundancy:
+            missing_params.append("-r")
+        if not args.servers:
+            missing_params.append("--servers")
+        if not args.protocol:
+            missing_params.append("--protocol")
+
+        print("No parameters specified: %s, using config.json..." % ", ".join(missing_params))
         params = read_config('config.json')
 
     create_fat_tree(params, args.dir, args.name, args.kube_net)

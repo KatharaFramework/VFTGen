@@ -1,7 +1,10 @@
 import os
 
 from .node_types.Container import Container
+from .node_types.Leaf import Leaf
 from .node_types.Server import Server
+from .node_types.Spine import Spine
+from .node_types.Tof import Tof
 from .node_types.VirtualMachine import VirtualMachine
 
 
@@ -23,11 +26,11 @@ class Laboratory(object):
         for pod_name, pod in topology.pods.items():
             for node_name, node in pod.items():
                 self.write_lab_conf(self.lab_dir_name, node)
-                self.write_startup(self.lab_dir_name, node)
+                self.init_node_configuration(node)
 
         for node_name, node in topology.aggregation_layer.items():
             self.write_lab_conf(self.lab_dir_name, node)
-            self.write_startup(self.lab_dir_name, node)
+            self.init_node_configuration(node)
 
     def write_lab_conf(self, path, node):
         """
@@ -47,8 +50,32 @@ class Laboratory(object):
                     (type(node) == VirtualMachine and node.containers_number > 0):
                 lab_config.write(f'{node.name}[nested]="true"\n')
 
-            if type(node) == Container:
+            if type(node) == VirtualMachine or type(node) == Container:
                 lab_config.write(f'{node.name}[mem]="64M"\n')
+
+    def init_node_configuration(self, node):
+        os.mkdir(os.path.join(self.lab_dir_name, node.name))
+
+        if type(node) in [Leaf, Spine, Tof]:
+            os.mkdir('%s/%s/etc' % (self.lab_dir_name, node.name))
+            self.write_startup(self.lab_dir_name, node)
+
+        if type(node) == Server:
+            self.write_lab_conf(self.lab_dir_name, node)
+            self.write_startup(self.lab_dir_name, node)
+
+            if node.vms_number > 0:
+                server_sublab_path = os.path.join(self.lab_dir_name, node.name, "sublab")
+                os.makedirs(server_sublab_path, exist_ok=True)
+                for vm in node.vms:
+                    self.write_lab_conf(server_sublab_path, vm)
+                    self.write_startup(server_sublab_path, vm)
+
+                    vm_sublab_path = os.path.join(server_sublab_path, vm.name, "sublab")
+                    os.makedirs(vm_sublab_path, exist_ok=True)
+                    for container in vm.containers:
+                        self.write_lab_conf(vm_sublab_path, container)
+                        self.write_startup(vm_sublab_path, container)
 
     def write_startup(self, path, node):
         """
@@ -57,23 +84,8 @@ class Laboratory(object):
         :param node: a Node object (Leaf | Spine | Server | Tof)
         :return:
         """
-        os.mkdir(os.path.join(path, node.name))
 
-        if type(node) != Server:
-            os.mkdir('%s/%s/etc' % (self.lab_dir_name, node.name))
-
-        if type(node) == Server:
-            if node.vms_number > 0:
-                server_sublab_path = os.path.join(self.lab_dir_name, node.name, "sublab")
-                os.mkdir(server_sublab_path)
-                for vm in node.vms:
-                    self.write_lab_conf(server_sublab_path, vm)
-                    vm_sublab_path = os.path.join(server_sublab_path, vm.name)
-                    os.mkdir(vm_sublab_path)
-                    for container in vm.containers:
-                        self.write_lab_conf(vm_sublab_path, container)
-
-        with open('%s/%s.startup' % (self.lab_dir_name, node.name), 'a') as startup:
+        with open(os.path.join(path, f"{node.name}.startup"), 'a') as startup:
             for interface in node.interfaces:
                 startup.write('ifconfig %s %s/%s up\n' % (interface.get_name(),
                                                           str(interface.ip_address),
@@ -83,4 +95,12 @@ class Laboratory(object):
 
             if type(node) == Server:
                 startup.write('route add default gw %s\n' % str(node.interfaces[0].neighbours[0][1]))
+                if node.vms_number == 0:
+                    startup.write('/etc/init.d/apache2 start\n')
+
+            if (type(node) == Server and node.vms_number > 0) or \
+                    (type(node) == VirtualMachine and node.containers_number > 0):
+                startup.write("kathara lstart -d sublab/ --privileged")
+
+            if type(node) == Container:
                 startup.write('/etc/init.d/apache2 start\n')

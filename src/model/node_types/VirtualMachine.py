@@ -1,6 +1,5 @@
 from .Container import Container
 from ..node.Node import Node
-from ...networking.CollisionDomain import CollisionDomain
 
 
 class VirtualMachine(Node):
